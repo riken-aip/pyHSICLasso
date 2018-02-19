@@ -1,0 +1,7 @@
+include LICENSE
+recursive-include README.*
+recursive-include tests *
+inclede .travis.yml
+include tox.ini
+include .gitignore
+include setup.cfg
