@@ -37,6 +37,9 @@ When using .mat, .csv, .tsv, it is better to use pandas dataframe. The rows of t
 When using python's list or numpy's ndarray, Let each index be sample number, let values of each features for X[ind] and classification value for Y[ind].
 
 ```py
+>>> from pyHSICLasso import HSICLasso
+>>> hsic_lasso = HSICLasso()
+
 >>> hsic_lasso.input("data.mat")
 
 >>> hsic_lasso.input("data.csv")
