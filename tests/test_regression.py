@@ -23,12 +23,12 @@ class RegressionTest(unittest.TestCase):
 
         self.hsic_lasso.input("./tests/test_data/matlab_data.mat")
         self.hsic_lasso.regression(5)
-        self.assertEqual(self.hsic_lasso.A, [1099, 99, 1574, 1645, 299])
+        self.assertEqual(self.hsic_lasso.A, [1099, 99, 299, 1574, 1645])
 
         self.hsic_lasso.input("./tests/test_data/matlab_data.mat")
         self.hsic_lasso.regression(10)
-        self.assertEqual(self.hsic_lasso.A, [1099, 99, 1574, 1645, 299, 173,
-                                             199, 1299, 875, 574])
+        self.assertEqual(self.hsic_lasso.A, [1099, 99, 299, 1574, 1645, 173,
+                                             1299, 199, 90, 1473])
 
         self.hsic_lasso.input("./tests/test_data/csv_data.csv")
         self.hsic_lasso.regression(5)
@@ -37,7 +37,7 @@ class RegressionTest(unittest.TestCase):
         self.hsic_lasso.input("./tests/test_data/csv_data.csv")
         self.hsic_lasso.regression(10)
         self.assertEqual(self.hsic_lasso.A, [1422, 512, 248, 1670, 779, 244,
-                                             1581, 764, 1771, 266])
+                                             1581, 764, 1771, 1380])
 
 
 if __name__ == "__main__":
