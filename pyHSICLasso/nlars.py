@@ -59,7 +59,7 @@ def nlars(X, X_ty, num_feat):
         lam[0, 0] = C[0]
 
     k = 0
-    while sum(c[A]) / len(A) >= 1e-9 and len(A) < num_feat:
+    while sum(c[A]) / len(A) >= 1e-9 and len(A) < num_feat + 1:
         s = np.ones((len(A), 1))
         w = np.linalg.solve(np.dot(X[:, A].transpose(), X[:, A]), s)
         XtXw = np.dot(X.transpose(), np.dot(X[:, A], w))
@@ -100,7 +100,18 @@ def nlars(X, X_ty, num_feat):
             A.append(I[j])
             I.remove(I[j])
 
+    #We run numfeat + 1 iteration to update beta and path information
+    #Then, we return only numfeat features
+    if len(A) > num_feat:
+        A.pop()
+
+    #Sort A with respect to beta
+    s = beta[A]
+    sort_index = sorted(range(len(s)), key=lambda k: s[k], reverse=True)
+
+    A_sorted = [A[i] for i in sort_index]
+
     path_final = path[:, 0:(k + 1)]
     lam_final = lam[0:(k + 1)]
 
-    return path_final, beta, A, lam_final
+    return path_final, beta, A_sorted, lam_final

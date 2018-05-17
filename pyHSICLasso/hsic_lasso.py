@@ -42,12 +42,18 @@ def hsic_lasso(X_in, Y_in, y_kernel):
 
     L = np.dot(H, np.dot(L, H))
 
+    #Normalize HSIC tr(L*L) = 1
+    L = L / np.linalg.norm(L, 'fro')
+
     # Preparing design matrix for HSIC Lars
     X = np.zeros((n * n, d))
     X_ty = np.zeros((d, 1))
     for ii in range(d):
         Kx = kernel_gaussian(XX[ii, None], XX[ii, None], 1.0)
         tmp = np.dot(np.dot(H, Kx), H)
+
+        #Normalize HSIC tr(tmp*tmp) = 1
+        tmp = tmp / np.linalg.norm(tmp, 'fro')
         X[:, ii] = tmp.flatten()
         X_ty[ii] = (tmp * L).sum()
 
