@@ -29,6 +29,7 @@ class HSICLasso(object):
         self.beta = None
         self.A = None
         self.lam = None
+        self.featname = None
 
     def input(self, *args):
         self._check_args(args)
@@ -63,13 +64,16 @@ class HSICLasso(object):
         return True
 
     def dump(self):
+
+        #To normalize the feature importance
+        maxval = self.path[self.A[0],-1:][0]
         print("===== HSICLasso : Result ======")
-        print("| Order | Feature | Score |")
+        print("| Order | Feature     | Score |")
         for i in range(len(self.A)):
-            print("| {:<5} | {:<7} | {:.3f} |".format(i + 1,
-                                                      self.A[i] + 1,
+            print("| {:<5} | {:<11} | {:.3f} |".format(i + 1,
+                                                      self.featname[self.A[i]],
                                                       self.path[self.A[i],
-                                                                -1:][0]))
+                                                                -1:][0]/maxval))
         print("===== HSICLasso : Path ======")
         for i in range(len(self.A)):
             print(self.path[self.A[i], 1:])
@@ -122,11 +126,11 @@ class HSICLasso(object):
     def _input_data_file(self, file_name):
         ext = file_name[-4:]
         if ext == ".csv":
-            self.X_in, self.Y_in = input_csv_file(file_name)
+            self.X_in, self.Y_in, self.featname = input_csv_file(file_name)
         elif ext == ".tsv":
-            self.X_in, self.Y_in = input_tsv_file(file_name)
+            self.X_in, self.Y_in, self.featname = input_tsv_file(file_name)
         elif ext == ".mat":
-            self.X_in, self.Y_in = input_matlab_file(file_name)
+            self.X_in, self.Y_in, self.featname = input_matlab_file(file_name)
         return True
 
     def _input_data_list(self, X_in, Y_in):
