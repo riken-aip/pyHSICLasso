@@ -86,7 +86,7 @@ class HSICLasso(object):
         return True
 
     def get_index(self):
-        return self.A[:-1]
+        return self.A
 
     # ========================================
 
