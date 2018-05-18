@@ -32,12 +32,15 @@ def nlars(X, X_ty, num_feat):
         path         the entire solution path
         beta         D x 1 solution vector
         A            selected features
+        A_neighbors  related features of the selected features in A
         lam(lambda)  regularization value at beginning of step corresponds
                      to value of negative gradient
     """
     n, d = X.shape
 
     A = []
+    A_neighbors = []
+    A_neighbors_score = []
     beta = np.zeros((d, 1))
     path = np.zeros((d, 4 * d))
     lam = np.zeros((1, 4 * d))
@@ -111,7 +114,18 @@ def nlars(X, X_ty, num_feat):
 
     A_sorted = [A[i] for i in sort_index]
 
+    #Find nighbors of selected features
+    XtXA = np.dot(X.transpose(), X[:, A_sorted])
+
+    #Search up to 10 nighbors
+    num_neighbors = 11
+    for i in range(0,len(A_sorted)):
+        tmp = XtXA[:,i]
+        sort_index = sorted(range(len(tmp)), key=lambda k: tmp[k], reverse=True)
+        A_neighbors.append(sort_index[0:num_neighbors])
+        A_neighbors_score.append(tmp[sort_index[0:num_neighbors]])
+
     path_final = path[:, 0:(k + 1)]
     lam_final = lam[0:(k + 1)]
 
-    return path_final, beta, A_sorted, lam_final
+    return path_final, beta, A_sorted, lam_final, A_neighbors, A_neighbors_score

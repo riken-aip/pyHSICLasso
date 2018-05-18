@@ -28,6 +28,8 @@ class HSICLasso(object):
         self.path = None
         self.beta = None
         self.A = None
+        self.A_neighbors = None
+        self.A_neighbors_score = None
         self.lam = None
         self.featname = None
 
@@ -50,8 +52,9 @@ class HSICLasso(object):
         if self.X_in is None or self.Y_in is None:
             raise UnboundLocalError("Input your data")
         self.X, self.X_ty = hsic_lasso(self.X_in, self.Y_in, "Gauss")
-        self.path, self.beta, self.A, self.lam = nlars(self.X,
-                                                       self.X_ty, num_feat)
+        self.path, self.beta, self.A, self.lam, \
+        self.A_neighbors, self.A_neighbors_score = nlars(self.X,
+                                                         self.X_ty, num_feat)
         return True
 
     def classification(self, num_feat=5):
@@ -59,25 +62,31 @@ class HSICLasso(object):
             raise UnboundLocalError("Input your data")
         self.Y_in = (np.sign(self.Y_in) + 1) / 2 + 1
         self.X, self.X_ty = hsic_lasso(self.X_in, self.Y_in, "Delta")
-        self.path, self.beta, self.A, self.lam = nlars(self.X,
-                                                       self.X_ty, num_feat)
+        self.path, self.beta, self.A, self.lam, \
+        self.A_neighbors, self.A_neighbors_score = nlars(self.X,
+                                                         self.X_ty, num_feat)
         return True
 
     def dump(self):
 
         #To normalize the feature importance
         maxval = self.path[self.A[0],-1:][0]
-        print("===== HSICLasso : Result ======")
-        print("| Order | Feature     | Score |")
+        print("============================================== HSICLasso : Result ==================================================")
+        print("| Order | Feature     | Score | Top-5 Related Feature (Relatedness Score)                                          |")
         for i in range(len(self.A)):
-            print("| {:<5} | {:<11} | {:.3f} |".format(i + 1,
-                                                      self.featname[self.A[i]],
-                                                      self.path[self.A[i],
-                                                                -1:][0]/maxval))
-        print("===== HSICLasso : Path ======")
-        for i in range(len(self.A)):
-            print(self.path[self.A[i], 1:])
-        return True
+            print("| {:<5} | {:<11} | {:.3f} | {:<7} ({:.3f}), {:<7} ({:.3f}),"
+                  " {:<7} ({:.3f}), {:<7} ({:.3f}), {:<7} ({:.3f})|".format(i+1,self.featname[self.A[i]],
+                                                                            self.path[self.A[i],-1:][0]/maxval,
+                                                                            self.featname[self.A_neighbors[i][1]],self.A_neighbors_score[i][1],
+                                                                            self.featname[self.A_neighbors[i][2]],self.A_neighbors_score[i][2],
+                                                                            self.featname[self.A_neighbors[i][3]],self.A_neighbors_score[i][3],
+                                                                            self.featname[self.A_neighbors[i][4]],self.A_neighbors_score[i][4],
+                                                                            self.featname[self.A_neighbors[i][5]],self.A_neighbors_score[i][5]))
+
+        #print("===== HSICLasso : Path ======")
+        #for i in range(len(self.A)):
+        #    print(self.path[self.A[i], 1:])
+        #return True
 
     def plot(self):
         if self.path is None or self.beta is None or self.A is None:
@@ -87,6 +96,22 @@ class HSICLasso(object):
 
     def get_index(self):
         return self.A
+
+    def get_index_neighbors(self,feat_index=0,num_neighbors=5):
+        if feat_index > len(self.A) -1:
+            raise ValueError("Index does not exist")
+
+        num_neighbors = min(num_neighbors,10)
+
+        return self.A_neighbors[feat_index][1:(num_neighbors+1)]
+
+    def get_index_neighbors_score(self, feat_index=0, num_neighbors=5):
+        if feat_index > len(self.A) - 1:
+            raise ValueError("Index does not exist")
+
+        num_neighbors = min(num_neighbors, 10)
+
+        return self.A_neighbors_score[feat_index][1:(num_neighbors + 1)]
 
     # ========================================
 
