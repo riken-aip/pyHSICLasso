@@ -72,10 +72,10 @@ class HSICLasso(object):
         #To normalize the feature importance
         maxval = self.path[self.A[0],-1:][0]
         print("============================================== HSICLasso : Result ==================================================")
-        print("| Order | Feature     | Score | Top-5 Related Feature (Relatedness Score)                                          |")
+        print("| Order | Feature      | Score | Top-5 Related Feature (Relatedness Score)                                          |")
         for i in range(len(self.A)):
-            print("| {:<5} | {:<11} | {:.3f} | {:<7} ({:.3f}), {:<7} ({:.3f}),"
-                  " {:<7} ({:.3f}), {:<7} ({:.3f}), {:<7} ({:.3f})|".format(i+1,self.featname[self.A[i]],
+            print("| {:<5} | {:<12} | {:.3f} | {:<12} ({:.3f}), {:<12} ({:.3f}),"
+                  " {:<12} ({:.3f}), {:<12} ({:.3f}), {:<12} ({:.3f})|".format(i+1,self.featname[self.A[i]],
                                                                             self.path[self.A[i],-1:][0]/maxval,
                                                                             self.featname[self.A_neighbors[i][1]],self.A_neighbors_score[i][1],
                                                                             self.featname[self.A_neighbors[i][2]],self.A_neighbors_score[i][2],
@@ -112,6 +112,58 @@ class HSICLasso(object):
         num_neighbors = min(num_neighbors, 10)
 
         return self.A_neighbors_score[feat_index][1:(num_neighbors + 1)]
+
+    def save_score(self,filename='aggregated_score.csv'):
+        maxval = self.path[self.A[0], -1:][0]
+        fout = open(filename,'w')
+        featscore = {}
+        for i in range(len(self.A)):
+            HSIC_XY = (self.path[self.A[i], -1:][0] / maxval)
+
+            if self.featname[self.A[i]] not in featscore:
+                featscore[self.featname[self.A[i]]] = HSIC_XY
+            else:
+                featscore[self.featname[self.A[i]]] += HSIC_XY
+
+            for j in range(1, 11):
+                HSIC_XX = self.A_neighbors_score[i][j]
+                if self.featname[self.A_neighbors[i][j]] not in featscore:
+                    featscore[self.featname[self.A_neighbors[i][j]]] = HSIC_XY * HSIC_XX
+                else:
+                    featscore[self.featname[self.A_neighbors[i][j]]] += HSIC_XY * HSIC_XX
+
+        # Sorting decending order
+        featscore_sorted = sorted(featscore.items(), key=lambda x: x[1], reverse=True)
+
+        fout.write('Feature,Score\n')
+        for (key, val) in featscore_sorted:
+            fout.write(key + ',' + str(val) + '\n')
+
+        fout.close()
+
+    def save_param(self,filename='param.csv'):
+        # Save parameters
+        maxval = self.path[self.A[0], -1:][0]
+
+        fout = open(filename, 'w')
+        sstr = 'Feature,Score,'
+        for j in range(1, 11):
+            sstr = sstr + 'Neighbor %d, Neighbor %d score,' % (j, j)
+
+        sstr = sstr + '\n'
+        fout.write(sstr)
+        for i in range(len(self.A)):
+            tmp = []
+            tmp.append(self.featname[self.A[i]])
+            tmp.append(str(self.path[self.A[i], -1:][0] / maxval))
+            for j in range(1, 11):
+                tmp.append(str(self.featname[self.A_neighbors[i][j]]))
+                tmp.append(str(self.A_neighbors_score[i][j]))
+
+            sstr = ','.join(tmp) + '\n'
+            fout.write(sstr)
+
+        fout.close()
 
     # ========================================
 
