@@ -117,11 +117,17 @@ class HSICLasso(object):
         maxval = self.path[self.A[0], -1:][0]
         fout = open(filename,'w')
         featscore = {}
+        featcorrcoeff = {}
         for i in range(len(self.A)):
             HSIC_XY = (self.path[self.A[i], -1:][0] / maxval)
 
             if self.featname[self.A[i]] not in featscore:
                 featscore[self.featname[self.A[i]]] = HSIC_XY
+
+                corrcoeff = np.corrcoef(self.X_in[self.A[i]],self.Y_in)[0][1]
+
+                featcorrcoeff[self.featname[self.A[i]]] = corrcoeff
+
             else:
                 featscore[self.featname[self.A[i]]] += HSIC_XY
 
@@ -129,15 +135,20 @@ class HSICLasso(object):
                 HSIC_XX = self.A_neighbors_score[i][j]
                 if self.featname[self.A_neighbors[i][j]] not in featscore:
                     featscore[self.featname[self.A_neighbors[i][j]]] = HSIC_XY * HSIC_XX
+
+                    corrcoeff = np.corrcoef(self.X_in[self.A_neighbors[i][j]], self.Y_in)[0][1]
+
+                    featcorrcoeff[self.featname[self.A_neighbors[i][j]]] = corrcoeff
                 else:
                     featscore[self.featname[self.A_neighbors[i][j]]] += HSIC_XY * HSIC_XX
 
         # Sorting decending order
         featscore_sorted = sorted(featscore.items(), key=lambda x: x[1], reverse=True)
 
-        fout.write('Feature,Score\n')
+        # Add Pearson correlation for comparison
+        fout.write('Feature,Score,Pearson Corr\n')
         for (key, val) in featscore_sorted:
-            fout.write(key + ',' + str(val) + '\n')
+            fout.write(key + ',' + str(val) + ',' + str(featcorrcoeff[key]) + '\n')
 
         fout.close()
 
