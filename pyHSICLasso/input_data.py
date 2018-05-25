@@ -13,20 +13,31 @@ standard_library.install_aliases()
 
 def input_csv_file(file_name):
     df = pd.read_csv(file_name, sep=",")
+
+    #Store the column name (Feature name)
+    featname = df.columns[1:].tolist()
+
     X_in = df.ix[:, 1:].as_matrix().T
     Y_in = df.ix[:, 0].as_matrix().reshape(1, len(df.index))
-    return X_in, Y_in
+    return X_in, Y_in, featname
 
 
 def input_tsv_file(file_name):
     df = pd.read_csv(file_name, sep="\t")
+
+    # Store the column name (Feature name)
+    featname = df.columns[1:].tolist()
+
     X_in = df.ix[:, 1:].as_matrix().T
     Y_in = df.ix[:, 0].as_matrix().reshape(1, len(df.index))
-    return X_in, Y_in
+    return X_in, Y_in, featname
 
 
 def input_matlab_file(file_name):
     data = spio.loadmat(file_name)
+
+
+
     if "X" in data.keys() and "Y" in data.keys():
         X_in = data["X"]
         Y_in = data["Y"]
@@ -41,4 +52,9 @@ def input_matlab_file(file_name):
         Y_in = data["y_in"]
     else:
         raise KeyError("not find input data")
-    return X_in, Y_in
+
+    #Create feature list
+    d = X_in.shape[0]
+    featname = [('%d' % i) for i in range(1,d+1)]
+
+    return X_in, Y_in, featname
