@@ -1,5 +1,5 @@
 # pyHSICLasso
-[![Build Status](https://travis-ci.org/riken-aip/pyHSICLasso.svg?branch=master)](https://travis-ci.org/suecharo/pyHSICLasso)
+[![Build Status](https://travis-ci.org/riken-aip/pyHSICLasso.svg?branch=master)](https://travis-ci.org/riken-aip/pyHSICLasso)
 
 pyHSICLasso is a supervised feature selection considering the dependency of nonlinear input and output.
 
