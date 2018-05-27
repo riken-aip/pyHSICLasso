@@ -6,7 +6,6 @@ README.rst
 requirements.txt
 setup.cfg
 setup.py
-tox.ini
 pyHSICLasso/__init__.py
 pyHSICLasso/api.py
 pyHSICLasso/hsic_lasso.py
