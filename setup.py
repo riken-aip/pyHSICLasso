@@ -8,15 +8,33 @@ from builtins import open
 
 from future import standard_library
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 standard_library.install_aliases()
-
 
 
 here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, "README.rst"), encoding="utf-8") as f:
     long_description = f.read()
+
+
+def _load_requires_from_file(filepath):
+    return [pkg_name.rstrip('\r\n') for pkg_name in open(filepath).readlines()]
+
+
+def _install_requires():
+    return _load_requires_from_file('requirements.txt')
+
+
+def _packages():
+    return find_packages(
+        exclude=[
+            '*.tests',
+            '*.tests.*',
+            'tests.*',
+            'tests'
+        ]
+    )
 
 
 setup(
@@ -41,8 +59,8 @@ setup(
     platforms=["python2.7", "python3.4", "python3.5", "python3.6"],
     license="MIT",
     keywords="HSIC Lasso HSICLasso feature-selection data-science",
-    # install_requires=["numpy", "scipy", "matplotlib", "pandas", "future"],
     setup_requires=["pytest-runner"],
     tests_require=["pytest"],
-    packages=["pyHSICLasso"],
+    install_requires=_install_requires(),
+    packages=_packages()
 )

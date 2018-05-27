@@ -1,7 +1,9 @@
 include LICENSE
-recursive-include README.*
-recursive-include tests *
-inclede .travis.yml
+include .travis.yml
 include tox.ini
-include .gitignore
 include setup.cfg
+include README.md
+include README.rst
+include requirements.txt
+recursive-include tests *.py
+recursive-include tests/test_data *

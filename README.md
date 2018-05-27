@@ -8,7 +8,13 @@ The goal of supervised feature selection is to find a subset of input features t
 
 ## Install
 ```sh
-$ pip install numpy scipy pandas matplotlib future
+$ pip install -r requirements.txt
+$ python setup.py install
+```
+
+or  
+
+```sh
 $ pip install pyHSICLasso
 ```
 
