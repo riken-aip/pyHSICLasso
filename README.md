@@ -1,5 +1,5 @@
 # pyHSICLasso
-[![Build Status](https://travis-ci.org/suecharo/pyHSICLasso.svg?branch=master)](https://travis-ci.org/suecharo/pyHSICLasso)
+[![Build Status](https://travis-ci.org/riken-aip/pyHSICLasso.svg?branch=master)](https://travis-ci.org/suecharo/pyHSICLasso)
 
 pyHSICLasso is a supervised feature selection considering the dependency of nonlinear input and output.
 
@@ -8,7 +8,13 @@ The goal of supervised feature selection is to find a subset of input features t
 
 ## Install
 ```sh
-$ pip install numpy scipy pandas matplotlib future
+$ pip install -r requirements.txt
+$ python setup.py install
+```
+
+or  
+
+```sh
 $ pip install pyHSICLasso
 ```
 
