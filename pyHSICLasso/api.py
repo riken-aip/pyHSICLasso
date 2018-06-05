@@ -32,6 +32,7 @@ class HSICLasso(object):
         self.A_neighbors_score = None
         self.lam = None
         self.featname = None
+        self.max_neighbors = 10
 
     def input(self, *args):
         self._check_args(args)
@@ -48,23 +49,31 @@ class HSICLasso(object):
         self._check_shape()
         return True
 
-    def regression(self, num_feat=5):
+    def regression(self, num_feat=5, max_neighbors=10):
         if self.X_in is None or self.Y_in is None:
             raise UnboundLocalError("Input your data")
+
+        self.max_neighbors = max_neighbors
+
         self.X, self.X_ty = hsic_lasso(self.X_in, self.Y_in, "Gauss")
         self.path, self.beta, self.A, self.lam, \
         self.A_neighbors, self.A_neighbors_score = nlars(self.X,
-                                                         self.X_ty, num_feat)
+                                                         self.X_ty, num_feat, self.max_neighbors)
+
         return True
 
-    def classification(self, num_feat=5):
+    def classification(self, num_feat=5, max_neighbors=10):
         if self.X_in is None or self.Y_in is None:
             raise UnboundLocalError("Input your data")
+
+        self.max_neighbors = max_neighbors
+
         self.Y_in = (np.sign(self.Y_in) + 1) / 2 + 1
         self.X, self.X_ty = hsic_lasso(self.X_in, self.Y_in, "Delta")
         self.path, self.beta, self.A, self.lam, \
         self.A_neighbors, self.A_neighbors_score = nlars(self.X,
-                                                         self.X_ty, num_feat)
+                                                         self.X_ty, num_feat, self.max_neighbors)
+
         return True
 
     def dump(self):
@@ -101,7 +110,7 @@ class HSICLasso(object):
         if feat_index > len(self.A) -1:
             raise ValueError("Index does not exist")
 
-        num_neighbors = min(num_neighbors,10)
+        num_neighbors = min(num_neighbors,self.max_neighbors)
 
         return self.A_neighbors[feat_index][1:(num_neighbors+1)]
 
@@ -109,7 +118,7 @@ class HSICLasso(object):
         if feat_index > len(self.A) - 1:
             raise ValueError("Index does not exist")
 
-        num_neighbors = min(num_neighbors, 10)
+        num_neighbors = min(num_neighbors, self.max_neighbors)
 
         return self.A_neighbors_score[feat_index][1:(num_neighbors + 1)]
 
@@ -158,7 +167,7 @@ class HSICLasso(object):
 
         fout = open(filename, 'w')
         sstr = 'Feature,Score,'
-        for j in range(1, 11):
+        for j in range(1, self.max_neighbors + 1):
             sstr = sstr + 'Neighbor %d, Neighbor %d score,' % (j, j)
 
         sstr = sstr + '\n'
@@ -167,7 +176,7 @@ class HSICLasso(object):
             tmp = []
             tmp.append(self.featname[self.A[i]])
             tmp.append(str(self.path[self.A[i], -1:][0] / maxval))
-            for j in range(1, 11):
+            for j in range(1, self.max_neighbors + 1):
                 tmp.append(str(self.featname[self.A_neighbors[i][j]]))
                 tmp.append(str(self.A_neighbors_score[i][j]))
 
