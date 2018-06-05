@@ -140,7 +140,7 @@ class HSICLasso(object):
             else:
                 featscore[self.featname[self.A[i]]] += HSIC_XY
 
-            for j in range(1, 11):
+            for j in range(1, self.max_neighbors + 1):
                 HSIC_XX = self.A_neighbors_score[i][j]
                 if self.featname[self.A_neighbors[i][j]] not in featscore:
                     featscore[self.featname[self.A_neighbors[i][j]]] = HSIC_XY * HSIC_XX
