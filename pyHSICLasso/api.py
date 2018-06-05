@@ -103,6 +103,16 @@ class HSICLasso(object):
         plot_figure(self.path, self.beta, self.A)
         return True
 
+    def get_features(self):
+        index = self.get_index()
+
+        return [self.featname[i] for i in index]
+
+    def get_features_neighbors(self,feat_index=0, num_neighbors=5):
+        index = self.get_index_neighbors(feat_index=feat_index, num_neighbors=num_neighbors)
+
+        return [self.featname[i] for i in index]
+
     def get_index(self):
         return self.A
 
