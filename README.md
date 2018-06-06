@@ -27,7 +27,8 @@ This class has the following methods.
 - regression
 - classification
 - dump
-- plot
+- plot_path
+- plot_dendrogram
 - get_features
 - get_features_neighbors
 - get_index

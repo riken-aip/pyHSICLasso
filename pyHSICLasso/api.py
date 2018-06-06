@@ -7,13 +7,15 @@ from __future__ import (absolute_import, division, print_function,
 from builtins import range
 
 import numpy as np
+import scipy.spatial.distance as distance
+from scipy.cluster.hierarchy import  linkage
 from future import standard_library
 from six import string_types
 
 from .hsic_lasso import hsic_lasso
 from .input_data import input_csv_file, input_matlab_file, input_tsv_file
 from .nlars import nlars
-from .plot_figure import plot_figure
+from .plot_figure import plot_path, plot_dendrogram
 
 standard_library.install_aliases()
 
@@ -32,6 +34,8 @@ class HSICLasso(object):
         self.A_neighbors_score = None
         self.lam = None
         self.featname = None
+        self.linkage_dist = None
+        self.hclust_featname = None
         self.max_neighbors = 10
 
     def input(self, *args):
@@ -76,6 +80,30 @@ class HSICLasso(object):
 
         return True
 
+    #For kernel Hierarchical Clustering
+    def linkage(self,method='ward'):
+        if self.A is None:
+            raise UnboundLocalError("Run regression/classification first")
+
+        #selected feature name
+        featname_index = []
+        featname_selected = []
+        for i in range(len(self.A)-1):
+            for index in self.A_neighbors[i]:
+                if index not in featname_index:
+                    featname_index.append(index)
+                    featname_selected.append(self.featname[index])
+
+        self.hclust_featname = featname_selected
+
+        dist = np.dot(self.X[:,featname_index].transpose(), self.X[:,featname_index])
+        dist = dist - np.diag(np.diag(dist))
+
+        dist_sym = (dist + dist.transpose()) / 2.0
+        self.linkage_dist = linkage(distance.squareform(dist_sym),method)
+
+        return True
+
     def dump(self):
 
         #To normalize the feature importance
@@ -97,10 +125,17 @@ class HSICLasso(object):
         #    print(self.path[self.A[i], 1:])
         #return True
 
-    def plot(self):
+    def plot_dendrogram(self):
+        if self.linkage_dist is None or self.hclust_featname is None:
+            raise UnboundLocalError("Input your data")
+        plot_dendrogram(self.linkage_dist, self.hclust_featname)
+        return True
+
+
+    def plot_path(self):
         if self.path is None or self.beta is None or self.A is None:
             raise UnboundLocalError("Input your data")
-        plot_figure(self.path, self.beta, self.A)
+        plot_path(self.path, self.beta, self.A)
         return True
 
     def get_features(self):

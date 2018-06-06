@@ -8,11 +8,17 @@ from builtins import range
 
 from future import standard_library
 from matplotlib import pyplot as plt
+from scipy.cluster.hierarchy import  dendrogram
 
 standard_library.install_aliases()
 
 
-def plot_figure(path, beta, A):
+def plot_dendrogram(linkage,featname_selected):
+    dendrogram(linkage,labels=featname_selected)
+    plt.title("Dendrogram")
+    plt.show()
+
+def plot_path(path, beta, A):
     t = path.sum(0)
     plt.title("HSICLasso Result")
     plt.xlabel("lambda")
