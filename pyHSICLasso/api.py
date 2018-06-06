@@ -132,6 +132,18 @@ class HSICLasso(object):
 
         return self.A_neighbors_score[feat_index][1:(num_neighbors + 1)]
 
+    def save_HSICmatrix(self):
+        if self.X_in is None or self.Y_in is None:
+            raise UnboundLocalError("Input your data")
+
+        self.X, self.X_ty = hsic_lasso(self.X_in, self.Y_in, "Gauss")
+
+        K = np.dot(self.X.transpose(), self.X)
+
+        np.savetxt('HSICmatrix.csv',K,delimiter=',', fmt='%.7f')
+
+        return True
+
     def save_score(self,filename='aggregated_score.csv'):
         maxval = self.path[self.A[0], -1:][0]
         fout = open(filename,'w')
