@@ -96,7 +96,8 @@ class HSICLasso(object):
 
         self.hclust_featname = featname_selected
 
-        dist = np.dot(self.X[:,featname_index].transpose(), self.X[:,featname_index])
+        sim = np.dot(self.X[:,featname_index].transpose(), self.X[:,featname_index])
+        dist = 1 - sim
         dist = dist - np.diag(np.diag(dist))
 
         dist_sym = (dist + dist.transpose()) / 2.0
