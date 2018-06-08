@@ -15,7 +15,7 @@ from six import string_types
 from .hsic_lasso import hsic_lasso
 from .input_data import input_csv_file, input_matlab_file, input_tsv_file
 from .nlars import nlars
-from .plot_figure import plot_path, plot_dendrogram
+from .plot_figure import plot_path, plot_dendrogram, plot_heatmap
 
 standard_library.install_aliases()
 
@@ -36,6 +36,7 @@ class HSICLasso(object):
         self.featname = None
         self.linkage_dist = None
         self.hclust_featname = None
+        self.hclust_featnameindex = None
         self.max_neighbors = 10
 
     def input(self, *args):
@@ -95,6 +96,7 @@ class HSICLasso(object):
                     featname_selected.append(self.featname[index])
 
         self.hclust_featname = featname_selected
+        self.hclust_featnameindex = featname_index
 
         sim = np.dot(self.X[:,featname_index].transpose(), self.X[:,featname_index])
         dist = 1 - sim
@@ -125,6 +127,12 @@ class HSICLasso(object):
         #for i in range(len(self.A)):
         #    print(self.path[self.A[i], 1:])
         #return True
+
+    def plot_heatmap(self):
+        if self.linkage_dist is None or self.hclust_featname is None or self.hclust_featnameindex is None:
+            raise UnboundLocalError("Input your data")
+        plot_heatmap(self.X_in[self.hclust_featnameindex,:],self.linkage_dist, self.hclust_featname)
+        return True
 
     def plot_dendrogram(self):
         if self.linkage_dist is None or self.hclust_featname is None:
@@ -168,7 +176,7 @@ class HSICLasso(object):
 
         return self.A_neighbors_score[feat_index][1:(num_neighbors + 1)]
 
-    def save_HSICmatrix(self):
+    def save_HSICmatrix(self,filename='HSICmatrix.csv'):
         if self.X_in is None or self.Y_in is None:
             raise UnboundLocalError("Input your data")
 
@@ -176,7 +184,7 @@ class HSICLasso(object):
 
         K = np.dot(self.X.transpose(), self.X)
 
-        np.savetxt('HSICmatrix.csv',K,delimiter=',', fmt='%.7f')
+        np.savetxt(filename,K,delimiter=',', fmt='%.7f')
 
         return True
 
