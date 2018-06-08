@@ -100,7 +100,7 @@ class HSICLasso(object):
 
         sim = np.dot(self.X[:,featname_index].transpose(), self.X[:,featname_index])
         dist = 1 - sim
-        dist = dist - np.diag(np.diag(dist))
+        dist = np.maximum(0,dist - np.diag(np.diag(dist)))
 
         dist_sym = (dist + dist.transpose()) / 2.0
         self.linkage_dist = linkage(distance.squareform(dist_sym),method)
