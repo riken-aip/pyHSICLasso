@@ -32,7 +32,7 @@ def hsic_lasso(X_in, Y_in, y_kernel):
     H = np.eye(n) - 1 / n * np.ones(n)
 
     # Normalization
-    XX = X_in / (X_in.std(1)[:, None]) * np.sqrt(n - 1 / n)
+    XX = X_in / (X_in.std(1)[:, None] + 10e-20) * np.sqrt(n - 1 / n)
 
     if y_kernel == "Delta":
         L = kernel_delta_norm(Y_in, Y_in)

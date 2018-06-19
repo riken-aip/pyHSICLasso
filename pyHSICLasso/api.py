@@ -50,11 +50,13 @@ class HSICLasso(object):
 
     def regression(self, num_feat = 5, B = 0):
         return self._run_hsic_lasso(num_feat = num_feat,
-                                    y_kernel = 'Gauss', B = 0)
+                                    y_kernel = 'Gauss',
+                                    B = B)
 
     def classification(self, num_feat = 5, B = 0):
         return self._run_hsic_lasso(num_feat = num_feat,
-                                    y_kernel = 'Delta', B = 0)
+                                    y_kernel = 'Delta',
+                                    B = B)
 
     def _run_hsic_lasso(self, y_kernel, num_feat, B):
 
