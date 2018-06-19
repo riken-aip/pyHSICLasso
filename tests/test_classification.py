@@ -43,5 +43,28 @@ class ClassificationTest(unittest.TestCase):
         self.assertEqual(self.hsic_lasso.A, [1422, 1670, 512, 248, 779, 1581,
                                              764, 244, 1771, 1380])
 
+        # Blocks
+        self.hsic_lasso.input("./tests/test_data/matlab_data.mat")
+        B = self.hsic_lasso.X_in.shape[1]/2
+        self.hsic_lasso.classification(5, B)
+        self.assertEqual(self.hsic_lasso.A, [99, 831, 1099, 467, 220])
+
+        self.hsic_lasso.input("./tests/test_data/matlab_data.mat")
+        B = self.hsic_lasso.X_in.shape[1]/2
+        self.hsic_lasso.classification(10, B)
+        self.assertEqual(self.hsic_lasso.A, [99, 831, 467, 1099, 220, 1109,
+                                             1918, 694, 1126, 1001])
+
+        self.hsic_lasso.input("./tests/test_data/csv_data.csv")
+        B = self.hsic_lasso.X_in.shape[1]/2
+        self.hsic_lasso.classification(5, B)
+        self.assertEqual(self.hsic_lasso.A, [1422, 512, 248, 1670, 779])
+
+        self.hsic_lasso.input("./tests/test_data/csv_data.csv")
+        B = self.hsic_lasso.X_in.shape[1]/2
+        self.hsic_lasso.classification(10, B)
+        self.assertEqual(self.hsic_lasso.A, [1422, 1670, 512, 248, 779, 1581,
+                                             764, 244, 1771, 1380])
+
 if __name__ == "__main__":
     unittest.main()
