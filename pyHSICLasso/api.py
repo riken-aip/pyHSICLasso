@@ -48,24 +48,44 @@ class HSICLasso(object):
         self._check_shape()
         return True
 
-    def regression(self, num_feat=5):
-        return self._run_hsic_lasso(num_feat = num_feat, y_kernel = 'Gauss')
+    def regression(self, num_feat = 5, B = 0):
+        return self._run_hsic_lasso(num_feat = num_feat,
+                                    y_kernel = 'Gauss', B = 0)
 
-    def classification(self, num_feat=5):
-        return self._run_hsic_lasso(num_feat = num_feat, y_kernel = 'Delta')
+    def classification(self, num_feat = 5, B = 0):
+        return self._run_hsic_lasso(num_feat = num_feat,
+                                    y_kernel = 'Delta', B = 0)
 
-    def _run_hsic_lasso(self, y_kernel, num_feat):
+    def _run_hsic_lasso(self, y_kernel, num_feat, B):
 
         if self.X_in is None or self.Y_in is None:
             raise UnboundLocalError("Input your data")
 
+        d,n = self.X_in.shape
+        B = B if B else n
+        numblocks = n/B
+
+        if not numblocks.is_integer():
+            raise UnboundLocalError("B {} must be an exact divisor of the \
+number of samples {}".format(B, n))
+
         if y_kernel == 'Delta':
             self.Y_in = (np.sign(self.Y_in) + 1) / 2 + 1
 
-        self.X, self.X_ty = hsic_lasso(self.X_in, self.Y_in, y_kernel)
-        self.path, self.beta, self.A, self.lam, \
-        self.A_neighbors, self.A_neighbors_score = nlars(self.X,
-                                                         self.X_ty, num_feat)
+        perm = np.random.permutation(n)
+        self.X_in = self.X_in[:,perm]
+        self.Y_in = self.Y_in[:,perm]
+
+        for i in range(0, n, B):
+            j = min(n, i+B)
+            X, Xty = hsic_lasso(self.X_in[:,i:j], self.Y_in[:,i:j], y_kernel)
+            self.X = np.vstack((self.X, X)) if i else X
+            self.Xty = self.Xty + Xty if i else Xty
+
+        self.X = np.sqrt(1/numblocks) * self.X
+        self.Xty = 1/numblocks * self.Xty
+        self.path, self.beta, self.A, self.lam, self.A_neighbors, \
+            self.A_neighbors_score = nlars(self.X, self.Xty, num_feat)
         return True
 
     def dump(self):

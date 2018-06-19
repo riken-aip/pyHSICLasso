@@ -7,6 +7,7 @@ from __future__ import (absolute_import, division, print_function,
 import unittest
 
 from future import standard_library
+import numpy as np
 
 from pyHSICLasso import HSICLasso
 
@@ -18,6 +19,9 @@ class RegressionTest(unittest.TestCase):
         self.hsic_lasso = HSICLasso()
 
     def test_regression(self):
+
+        np.random.seed(0)
+
         with self.assertRaises(UnboundLocalError):
             self.hsic_lasso.regression()
 
