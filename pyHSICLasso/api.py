@@ -49,21 +49,28 @@ class HSICLasso(object):
         return True
 
     def regression(self, num_feat = 5, B = 0):
+
+        if self.X_in is None or self.Y_in is None:
+            raise UnboundLocalError("Input your data")
+
         return self._run_hsic_lasso(num_feat = num_feat,
                                     y_kernel = 'Gauss',
                                     B = B)
 
     def classification(self, num_feat = 5, B = 0):
+
+        if self.X_in is None or self.Y_in is None:
+            raise UnboundLocalError("Input your data")
+
+        self.Y_in = (np.sign(self.Y_in) + 1) / 2 + 1
+
         return self._run_hsic_lasso(num_feat = num_feat,
                                     y_kernel = 'Delta',
                                     B = B)
 
     def _run_hsic_lasso(self, y_kernel, num_feat, B):
 
-        if self.X_in is None or self.Y_in is None:
-            raise UnboundLocalError("Input your data")
-
-        d,n = self.X_in.shape
+        n = self.X_in.shape[1]
         B = B if B else n
         numblocks = n/B
 
@@ -71,12 +78,7 @@ class HSICLasso(object):
             raise UnboundLocalError("B {} must be an exact divisor of the \
 number of samples {}".format(B, n))
 
-        if y_kernel == 'Delta':
-            self.Y_in = (np.sign(self.Y_in) + 1) / 2 + 1
-
-        perm = np.random.permutation(n)
-        self.X_in = self.X_in[:,perm]
-        self.Y_in = self.Y_in[:,perm]
+        self._permute_data()
 
         for i in range(0, n, B):
             j = min(n, i+B)
@@ -266,3 +268,10 @@ number of samples {}".format(B, n))
         if x_col_len != y_col_len:
             raise ValueError("Check your input data")
         return True
+
+    def _permute_data(self):
+        n = self.X_in.shape[1]
+
+        perm = np.random.permutation(n)
+        self.X_in = self.X_in[:,perm]
+        self.Y_in = self.Y_in[:,perm]
