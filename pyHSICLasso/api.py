@@ -9,6 +9,7 @@ from builtins import range
 import numpy as np
 from future import standard_library
 from six import string_types
+from multiprocessing import Pool
 
 from .hsic_lasso import hsic_lasso
 from .input_data import input_csv_file, input_matlab_file, input_tsv_file
@@ -80,17 +81,21 @@ number of samples {}".format(B, n))
 
         self._permute_data()
 
-        for i in range(0, n, B):
-            j = min(n, i+B)
-            X, Xty = hsic_lasso(self.X_in[:,i:j], self.Y_in[:,i:j], y_kernel)
-            self.X = np.vstack((self.X, X)) if i else X
-            self.Xty = self.Xty + Xty if i else Xty
+        p = Pool()
+        out = p.starmap(self._block, [ (i,i+B,y_kernel) for i in range(0,n,B) ])
 
-        self.X = np.sqrt(1/numblocks) * self.X
-        self.Xty = 1/numblocks * self.Xty
+        self.X = np.concatenate([ x[0] for x in out ]) * np.sqrt(1/numblocks)
+        self.Xty = np.sum([ x[1] for x in out ], axis = 0) * 1/numblocks
+
         self.path, self.beta, self.A, self.lam, self.A_neighbors, \
             self.A_neighbors_score = nlars(self.X, self.Xty, num_feat)
         return True
+
+    def _block(self, i, j, y_kernel):
+
+        j = min(j, self.X_in.shape[1])
+
+        return hsic_lasso(self.X_in[:,i:j], self.Y_in[:,i:j], y_kernel)
 
     def dump(self):
 
