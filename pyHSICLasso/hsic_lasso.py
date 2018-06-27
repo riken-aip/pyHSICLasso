@@ -1,18 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
-from builtins import range
-
 import numpy as np
-from future import standard_library
 
 from .kernel_tools import kernel_delta_norm, kernel_gaussian
-
-standard_library.install_aliases()
-
 
 def hsic_lasso(X_in, Y_in, y_kernel):
     """

@@ -1,23 +1,13 @@
 #!usr/bin/env python
 # coding: utf-8
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
-from builtins import range
-
 import numpy as np
-from future import standard_library
-from six import string_types
 from multiprocessing import Pool
 
 from .hsic_lasso import hsic_lasso
 from .input_data import input_csv_file, input_matlab_file, input_tsv_file
 from .nlars import nlars
 from .plot_figure import plot_figure
-
-standard_library.install_aliases()
-
 
 class HSICLasso(object):
     def __init__(self):
@@ -36,7 +26,7 @@ class HSICLasso(object):
 
     def input(self, *args):
         self._check_args(args)
-        if isinstance(args[0], string_types):
+        if isinstance(args[0], str):
             self._input_data_file(args[0])
         elif isinstance(args[0], list):
             self._input_data_list(args[0], args[1])
@@ -213,7 +203,7 @@ number of samples {}".format(B, n))
             raise SyntaxError("Input as input_data(file_name) or \
                 input_data(X_in, Y_in)")
         elif len(args) == 1:
-            if isinstance(args[0], string_types):
+            if isinstance(args[0], str):
                 if len(args[0]) <= 4:
                     raise ValueError("Check your file name")
                 else:
@@ -225,7 +215,7 @@ number of samples {}".format(B, n))
             else:
                 raise TypeError("File name is only str")
         elif len(args) == 2:
-            if isinstance(args[0], string_types):
+            if isinstance(args[0], str):
                 raise TypeError("Check arg type")
             elif isinstance(args[0], list):
                 if isinstance(args[1], list):

@@ -1,15 +1,7 @@
 #!/usr/bin.env python
 # coding: utf-8
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
-from future import standard_library
-
 from api import HSICLasso
-
-standard_library.install_aliases()
-
 
 def main():
     hsic_lasso = HSICLasso()

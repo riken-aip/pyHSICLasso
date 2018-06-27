@@ -1,17 +1,11 @@
 #!/usr/bin.env python
 # coding: utf-8
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import unittest
 
-from future import standard_library
 import numpy as np
 
 from pyHSICLasso import HSICLasso
-
-standard_library.install_aliases()
 
 
 class ClassificationTest(unittest.TestCase):

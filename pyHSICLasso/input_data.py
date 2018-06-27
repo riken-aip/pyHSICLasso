@@ -1,15 +1,8 @@
 #!usr/bin/env python
 # coding: utf-8
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import pandas as pd
-from future import standard_library
 from scipy import io as spio
-
-standard_library.install_aliases()
-
 
 def input_csv_file(file_name):
     df = pd.read_csv(file_name, sep=",")

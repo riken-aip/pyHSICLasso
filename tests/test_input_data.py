@@ -1,18 +1,9 @@
 #!/usr/bin.env python
 # coding: utf-8
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import unittest
 
-from future import standard_library
-
 from pyHSICLasso import input_csv_file, input_matlab_file, input_tsv_file
-
-standard_library.install_aliases()
-
-
 
 class InputDataTest(unittest.TestCase):
     def test_input_csv(self):

@@ -1,19 +1,11 @@
 #!/usr/bin.env python
 # coding: utf-8
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import unittest
 
 import numpy as np
-from future import standard_library
 
 from pyHSICLasso import HSICLasso
-
-standard_library.install_aliases()
-
-
 
 class InputTest(unittest.TestCase):
     def setUp(self):

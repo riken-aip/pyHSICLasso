@@ -1,16 +1,7 @@
 #!usr/bin/env python
 # coding: utf-8
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
-from builtins import range
-
 import numpy as np
-from future import standard_library
-
-standard_library.install_aliases()
-
 
 def nlars(X, X_ty, num_feat):
     """

@@ -1,17 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
 
 import os
-from builtins import open
-
-from future import standard_library
-
 from setuptools import setup, find_packages
-
-standard_library.install_aliases()
-
 
 here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, "README.rst"), encoding="utf-8") as f:
@@ -61,7 +52,7 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Topic :: Scientific/Engineering",
     ],
-    platforms=["python2.7", "python3.4", "python3.5", "python3.6"],
+    platforms=["python3.4", "python3.5", "python3.6"],
     license="MIT",
     keywords="HSIC Lasso HSICLasso feature-selection data-science",
     setup_requires=["pytest-runner"],
