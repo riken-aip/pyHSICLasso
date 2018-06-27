@@ -1,6 +1,7 @@
 #!usr/bin/env python
 # coding: utf-8
 
+from itertools import cycle
 import numpy as np
 from multiprocessing import Pool
 
@@ -72,7 +73,9 @@ number of samples {}".format(B, n))
         self._permute_data()
 
         p = Pool()
-        out = p.starmap(self._block, [ (i,i+B,y_kernel) for i in range(0,n,B) ])
+        out = p.starmap(hsic_lasso,zip(np.split(self.X_in, numblocks, axis = 1),
+                                       np.split(self.Y_in, numblocks, axis = 1),
+                                       cycle([y_kernel])))
 
         self.X = np.concatenate([ x[0] for x in out ]) * np.sqrt(1/numblocks)
         self.Xty = np.sum([ x[1] for x in out ], axis = 0) * 1/numblocks
@@ -80,12 +83,6 @@ number of samples {}".format(B, n))
         self.path, self.beta, self.A, self.lam, self.A_neighbors, \
             self.A_neighbors_score = nlars(self.X, self.Xty, num_feat)
         return True
-
-    def _block(self, i, j, y_kernel):
-
-        j = min(j, self.X_in.shape[1])
-
-        return hsic_lasso(self.X_in[:,i:j], self.Y_in[:,i:j], y_kernel)
 
     def dump(self):
 
