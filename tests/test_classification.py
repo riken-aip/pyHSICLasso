@@ -27,44 +27,44 @@ class ClassificationTest(unittest.TestCase):
 
         self.hsic_lasso.input("./tests/test_data/matlab_data.mat")
         self.hsic_lasso.classification(5)
-        self.assertEqual(self.hsic_lasso.A, [99, 831, 1099, 467, 220])
+        self.assertEqual(self.hsic_lasso.A, [99, 1099, 199, 1181, 112])
 
         self.hsic_lasso.input("./tests/test_data/matlab_data.mat")
         self.hsic_lasso.classification(10)
-        self.assertEqual(self.hsic_lasso.A, [99, 831, 467, 1099, 220, 1109,
-                                             1918, 694, 1126, 1001])
+        self.assertEqual(self.hsic_lasso.A, [99, 1099, 199, 1181, 112,
+                                             663, 761, 1869, 719, 977])
 
         self.hsic_lasso.input("./tests/test_data/csv_data.csv")
         self.hsic_lasso.classification(5)
-        self.assertEqual(self.hsic_lasso.A, [1422, 512, 248, 1670, 779])
+        self.assertEqual(self.hsic_lasso.A, [1422, 512, 248, 1581, 764])
 
         self.hsic_lasso.input("./tests/test_data/csv_data.csv")
         self.hsic_lasso.classification(10)
-        self.assertEqual(self.hsic_lasso.A, [1422, 1670, 512, 248, 779, 1581,
-                                             764, 244, 1771, 1380])
+        self.assertEqual(self.hsic_lasso.A, [1422, 512, 248, 1581, 764,
+                                             1670, 1771, 896, 779, 1472])
 
         # Blocks
         self.hsic_lasso.input("./tests/test_data/matlab_data.mat")
         B = int(self.hsic_lasso.X_in.shape[1]/2)
         self.hsic_lasso.classification(5, B)
-        self.assertEqual(self.hsic_lasso.A, [1099, 99, 1291, 126, 1260])
+        self.assertEqual(self.hsic_lasso.A, [99, 1099, 761, 250, 1199])
 
         self.hsic_lasso.input("./tests/test_data/matlab_data.mat")
         B = int(self.hsic_lasso.X_in.shape[1]/2)
         self.hsic_lasso.classification(10, B)
-        self.assertEqual(self.hsic_lasso.A, [468, 1099, 220, 831, 694,
-                                             99, 618, 548, 1901, 1001])
+        self.assertEqual(self.hsic_lasso.A, [99, 1274, 183, 112, 199,
+                                             390, 1181, 1099, 1339, 761])
 
         self.hsic_lasso.input("./tests/test_data/csv_data.csv")
         B = int(self.hsic_lasso.X_in.shape[1]/2)
         self.hsic_lasso.classification(5, B)
-        self.assertEqual(self.hsic_lasso.A, [1670, 1422, 512, 764, 248])
+        self.assertEqual(self.hsic_lasso.A, [1422, 512, 764, 1670, 248])
 
         self.hsic_lasso.input("./tests/test_data/csv_data.csv")
         B = int(self.hsic_lasso.X_in.shape[1]/2)
         self.hsic_lasso.classification(10, B)
-        self.assertEqual(self.hsic_lasso.A, [779, 1670, 1422, 248, 764,
-                                             1771, 512, 1136, 1581, 65])
+        self.assertEqual(self.hsic_lasso.A, [764, 1422, 779, 1771, 1581,
+                                             248, 512, 1670, 896, 1136])
 
         # no error: exact divisors of n = 62
         self.hsic_lasso.classification(5, 2)
