@@ -14,7 +14,7 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
+# dist/
 downloads/
 eggs/
 .eggs/
@@ -103,4 +103,3 @@ venv.bak/
 
 
 # End of https://www.gitignore.io/api/python
-
