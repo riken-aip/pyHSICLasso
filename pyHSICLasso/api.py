@@ -48,16 +48,16 @@ class HSICLasso(object):
         self._check_shape()
         return True
 
-    def regression(self, num_feat = 5, B = 0):
+    def regression(self, num_feat = 5, B = 0, M = 1):
 
         if self.X_in is None or self.Y_in is None:
             raise UnboundLocalError("Input your data")
 
         return self._run_hsic_lasso(num_feat = num_feat,
                                     y_kernel = 'Gauss',
-                                    B = B)
+                                    B = B, M = M)
 
-    def classification(self, num_feat = 5, B = 0):
+    def classification(self, num_feat = 5, B = 0, M = 1):
 
         if self.X_in is None or self.Y_in is None:
             raise UnboundLocalError("Input your data")
@@ -66,9 +66,9 @@ class HSICLasso(object):
 
         return self._run_hsic_lasso(num_feat = num_feat,
                                     y_kernel = 'Delta',
-                                    B = B)
+                                    B = B, M = M)
 
-    def _run_hsic_lasso(self, y_kernel, num_feat, B):
+    def _run_hsic_lasso(self, y_kernel, num_feat, B, M):
 
         n = self.X_in.shape[1]
         B = B if B else n
@@ -78,16 +78,20 @@ class HSICLasso(object):
             raise UnboundLocalError("B {} must be an exact divisor of the \
 number of samples {}".format(B, n))
 
-        self._permute_data()
+        perms = 1 + bool(numblocks - 1) * (M - 1)
+        
+        for p in range(perms):
 
-        for i in range(0, n, B):
-            j = min(n, i+B)
-            X, Xty = hsic_lasso(self.X_in[:,i:j], self.Y_in[:,i:j], y_kernel)
-            self.X = np.vstack((self.X, X)) if i else X
-            self.Xty = self.Xty + Xty if i else Xty
+            self._permute_data(p)
 
-        self.X = np.sqrt(1/numblocks) * self.X
-        self.Xty = 1/numblocks * self.Xty
+            for i in range(0, n, B):
+                j = min(n, i+B)
+                X, Xty = hsic_lasso(self.X_in[:,i:j], self.Y_in[:,i:j], y_kernel)
+                self.X = np.vstack((self.X, X)) if i+p else X
+                self.Xty = self.Xty + Xty if i+p else Xty
+
+        self.X = np.sqrt(1/(numblocks * perms)) * self.X
+        self.Xty = 1/(numblocks * perms) * self.Xty
         self.path, self.beta, self.A, self.lam, self.A_neighbors, \
             self.A_neighbors_score = nlars(self.X, self.Xty, num_feat)
         return True
@@ -261,7 +265,7 @@ number of samples {}".format(B, n))
         return True
 
     def _check_shape(self):
-        x_row_len, x_col_len = self.X_in.shape
+        _, x_col_len = self.X_in.shape
         y_row_len, y_col_len = self.Y_in.shape
         if y_row_len != 1:
             raise ValueError("Check your input data")
@@ -269,7 +273,8 @@ number of samples {}".format(B, n))
             raise ValueError("Check your input data")
         return True
 
-    def _permute_data(self):
+    def _permute_data(self, seed = None):
+        np.random.seed(seed)
         n = self.X_in.shape[1]
 
         perm = np.random.permutation(n)
