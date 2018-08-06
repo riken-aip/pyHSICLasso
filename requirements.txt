@@ -1,7 +1,7 @@
-future==0.16.0
-matplotlib==2.2.2
-numpy==1.14.5
-pandas==0.23.3
-pytest==3.6.3
-scipy==1.1.0
-six==1.11.0
+future
+matplotlib
+numpy
+pandas
+pytest
+scipy
+six
