@@ -46,25 +46,25 @@ class RegressionTest(unittest.TestCase):
         # Blocks
         self.hsic_lasso.input("./tests/test_data/matlab_data.mat")
         B = int(self.hsic_lasso.X_in.shape[1]/2)
-        self.hsic_lasso.regression(5, B)
-        self.assertEqual(self.hsic_lasso.A, [99, 1099, 1299, 199, 1477])
+        self.hsic_lasso.regression(5, B, 10)
+        self.assertEqual(self.hsic_lasso.A, [1099, 99, 199, 299, 1477])
 
         self.hsic_lasso.input("./tests/test_data/matlab_data.mat")
         B = int(self.hsic_lasso.X_in.shape[1]/2)
-        self.hsic_lasso.regression(10, B)
-        self.assertEqual(self.hsic_lasso.A, [1099, 1477, 199, 1335, 80,
-                                             358, 1299, 1405, 299, 1274])
+        self.hsic_lasso.regression(10, B, 10)
+        self.assertEqual(self.hsic_lasso.A, [1099, 99, 199, 1477, 299, 
+                                             1405, 1073, 1299, 1596, 358])
 
         self.hsic_lasso.input("./tests/test_data/csv_data.csv")
         B = int(self.hsic_lasso.X_in.shape[1]/2)
-        self.hsic_lasso.regression(5, B)
-        self.assertEqual(self.hsic_lasso.A, [1422, 512, 764, 1670, 248])
+        self.hsic_lasso.regression(5, B, 10)
+        self.assertEqual(self.hsic_lasso.A, [1422, 512, 248, 764, 1581])
 
         self.hsic_lasso.input("./tests/test_data/csv_data.csv")
         B = int(self.hsic_lasso.X_in.shape[1]/2)
-        self.hsic_lasso.regression(10, B)
-        self.assertEqual(self.hsic_lasso.A, [764, 1422, 779, 1771, 1581,
-                                             248, 512, 1670, 896, 1136])
+        self.hsic_lasso.regression(10, B, 10)
+        self.assertEqual(self.hsic_lasso.A, [1422, 512, 248, 764, 1581, 
+                                             1670, 1771, 896, 779, 1413])
 
         # no error: exact divisors of n = 62
         self.hsic_lasso.regression(5, 2)
