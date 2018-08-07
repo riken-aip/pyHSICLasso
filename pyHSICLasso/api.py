@@ -9,6 +9,7 @@ from builtins import range
 import numpy as np
 from future import standard_library
 from six import string_types
+import warnings
 
 from .hsic_lasso import hsic_lasso
 from .input_data import input_csv_file, input_matlab_file, input_tsv_file
@@ -73,10 +74,12 @@ class HSICLasso(object):
         n = self.X_in.shape[1]
         B = B if B else n
         numblocks = n/B
+        discarded = n % B
 
-        if not numblocks.is_integer():
-            raise UnboundLocalError("B {} must be an exact divisor of the \
-number of samples {}".format(B, n))
+        if discarded:
+            warnings.warn("B {} must be an exact divisor of the \
+number of samples {}. Number of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)), RuntimeWarning)
+            numblocks = int(numblocks)
 
         perms = 1 + bool(numblocks - 1) * (M - 1)
         
@@ -84,7 +87,7 @@ number of samples {}".format(B, n))
 
             self._permute_data(p)
 
-            for i in range(0, n, B):
+            for i in range(0, n - discarded, B):
                 j = min(n, i+B)
                 X, Xty = hsic_lasso(self.X_in[:,i:j], self.Y_in[:,i:j], y_kernel)
                 self.X = np.vstack((self.X, X)) if i+p else X
