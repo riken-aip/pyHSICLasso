@@ -7,6 +7,8 @@ from __future__ import (absolute_import, division, print_function,
 from builtins import range
 
 import numpy as np
+import scipy.spatial.distance as distance
+from scipy.cluster.hierarchy import  linkage
 from future import standard_library
 from six import string_types
 import warnings
@@ -14,7 +16,7 @@ import warnings
 from .hsic_lasso import hsic_lasso
 from .input_data import input_csv_file, input_matlab_file, input_tsv_file
 from .nlars import nlars
-from .plot_figure import plot_figure
+from .plot_figure import plot_path, plot_dendrogram, plot_heatmap
 
 standard_library.install_aliases()
 
@@ -33,6 +35,10 @@ class HSICLasso(object):
         self.A_neighbors_score = None
         self.lam = None
         self.featname = None
+        self.linkage_dist = None
+        self.hclust_featname = None
+        self.hclust_featnameindex = None
+        self.max_neighbors = 10
 
     def input(self, *args):
         self._check_args(args)
@@ -49,54 +55,84 @@ class HSICLasso(object):
         self._check_shape()
         return True
 
-    def regression(self, num_feat = 5, B = 0, M = 1, discrete_x = False):
 
-        return self._run_hsic_lasso(num_feat = num_feat,
-                                    y_kernel = 'Gauss',
-                                    B = B, M = M,
-                                    discrete_x = discrete_x)
+    def regression(self, num_feat=5, B=0, M=1, discrete_x=False, max_neighbors=10):
+        self._run_hsic_lasso(num_feat=num_feat,
+                             y_kernel="Gauss",
+                             B=B, M=M,
+                             discrete_x=discrete_x,
+                             max_neighbors=max_neighbors)
 
-    def classification(self, num_feat = 5, B = 0, M = 1, discrete_x = False):
+        return True
 
-        return self._run_hsic_lasso(num_feat = num_feat,
-                                    y_kernel = 'Delta',
-                                    B = B, M = M,
-                                    discrete_x = discrete_x)
 
-    def _run_hsic_lasso(self, y_kernel, num_feat, B, M, discrete_x):
+    def classification(self, num_feat=5, B=0, M=1, discrete_x=False, max_neighbors=10):
+        self._run_hsic_lasso(num_feat=num_feat,
+                             y_kernel="Delta",
+                             B=B, M=M,
+                             discrete_x=discrete_x,
+                             max_neighbors=max_neighbors)
 
+        return True
+
+
+    def _run_hsic_lasso(self, y_kernel, num_feat, B, M, discrete_x, max_neighbors):
         if self.X_in is None or self.Y_in is None:
             raise UnboundLocalError("Input your data")
-
+        self.max_neighbors = max_neighbors
         n = self.X_in.shape[1]
         B = B if B else n
-        x_kernel = 'Delta' if discrete_x else 'Gauss'
-        numblocks = n/B
+        x_kernel = "Delta" if discrete_x else "Gauss"
+        if x_kernel == "Delta":
+            self.Y_in = (np.sign(self.Y_in) + 1) / 2 + 1
+        numblocks = n / B
         discarded = n % B
-
         if discarded:
             warnings.warn("B {} must be an exact divisor of the \
 number of samples {}. Number of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)), RuntimeWarning)
             numblocks = int(numblocks)
-
         perms = 1 + bool(numblocks - 1) * (M - 1)
-        
         for p in range(perms):
-
             self._permute_data(p)
-
             for i in range(0, n - discarded, B):
-                j = min(n, i+B)
-                X, Xty = hsic_lasso(self.X_in[:,i:j], self.Y_in[:,i:j], y_kernel, x_kernel)
-                self.X = np.vstack((self.X, X)) if i+p else X
-                self.Xty = self.Xty + Xty if i+p else Xty
-
-        self.X = np.sqrt(1/(numblocks * perms)) * self.X
-        self.Xty = 1/(numblocks * perms) * self.Xty
+                j = min(n, i + B)
+                X, X_ty = hsic_lasso(
+                    self.X_in[:, i:j], self.Y_in[:, i:j], y_kernel, x_kernel)
+                self.X = np.vstack((self.X, X)) if i + p else X
+                self.X_ty = self.X_ty + X_ty if i + p else X_ty
+        self.X = np.sqrt(1 / (numblocks * perms)) * self.X
+        self.X_ty = 1 / (numblocks * perms) * self.X_ty
         self.path, self.beta, self.A, self.lam, self.A_neighbors, \
-            self.A_neighbors_score = nlars(self.X, self.Xty, num_feat)
+            self.A_neighbors_score = nlars(
+                self.X, self.X_ty, num_feat, self.max_neighbors)
+
         return True
 
+
+    # For kernel Hierarchical Clustering
+    def linkage(self, method="ward"):
+        if self.A is None:
+            raise UnboundLocalError("Run regression/classification first")
+        # selected feature name
+        featname_index = []
+        featname_selected = []
+        for i in range(len(self.A) - 1):
+            for index in self.A_neighbors[i]:
+                if index not in featname_index:
+                    featname_index.append(index)
+                    featname_selected.append(self.featname[index])
+        self.hclust_featname = featname_selected
+        self.hclust_featnameindex = featname_index
+        sim = np.dot(self.X[:, featname_index].transpose(),
+                     self.X[:, featname_index])
+        dist = 1 - sim
+        dist = np.maximum(0, dist - np.diag(np.diag(dist)))
+        dist_sym = (dist + dist.transpose()) / 2.0
+        self.linkage_dist = linkage(distance.squareform(dist_sym), method)
+
+        return True
+  
+  
     def dump(self):
 
         #To normalize the feature importance
@@ -118,11 +154,34 @@ number of samples {}. Number of blocks {} will be approximated to {}.".format(B,
         #    print(self.path[self.A[i], 1:])
         #return True
 
-    def plot(self):
+    def plot_heatmap(self):
+        if self.linkage_dist is None or self.hclust_featname is None or self.hclust_featnameindex is None:
+            raise UnboundLocalError("Input your data")
+        plot_heatmap(self.X_in[self.hclust_featnameindex,:],self.linkage_dist, self.hclust_featname)
+        return True
+
+    def plot_dendrogram(self):
+        if self.linkage_dist is None or self.hclust_featname is None:
+            raise UnboundLocalError("Input your data")
+        plot_dendrogram(self.linkage_dist, self.hclust_featname)
+        return True
+
+
+    def plot_path(self):
         if self.path is None or self.beta is None or self.A is None:
             raise UnboundLocalError("Input your data")
-        plot_figure(self.path, self.beta, self.A)
+        plot_path(self.path, self.beta, self.A)
         return True
+
+    def get_features(self):
+        index = self.get_index()
+
+        return [self.featname[i] for i in index]
+
+    def get_features_neighbors(self,feat_index=0, num_neighbors=5):
+        index = self.get_index_neighbors(feat_index=feat_index, num_neighbors=num_neighbors)
+
+        return [self.featname[i] for i in index]
 
     def get_index(self):
         return self.A
@@ -131,7 +190,7 @@ number of samples {}. Number of blocks {} will be approximated to {}.".format(B,
         if feat_index > len(self.A) -1:
             raise ValueError("Index does not exist")
 
-        num_neighbors = min(num_neighbors,10)
+        num_neighbors = min(num_neighbors,self.max_neighbors)
 
         return self.A_neighbors[feat_index][1:(num_neighbors+1)]
 
@@ -139,9 +198,21 @@ number of samples {}. Number of blocks {} will be approximated to {}.".format(B,
         if feat_index > len(self.A) - 1:
             raise ValueError("Index does not exist")
 
-        num_neighbors = min(num_neighbors, 10)
+        num_neighbors = min(num_neighbors, self.max_neighbors)
 
         return self.A_neighbors_score[feat_index][1:(num_neighbors + 1)]
+
+    def save_HSICmatrix(self,filename='HSICmatrix.csv'):
+        if self.X_in is None or self.Y_in is None:
+            raise UnboundLocalError("Input your data")
+
+        self.X, self.X_ty = hsic_lasso(self.X_in, self.Y_in, "Gauss")
+
+        K = np.dot(self.X.transpose(), self.X)
+
+        np.savetxt(filename,K,delimiter=',', fmt='%.7f')
+
+        return True
 
     def save_score(self,filename='aggregated_score.csv'):
         maxval = self.path[self.A[0], -1:][0]
@@ -161,7 +232,7 @@ number of samples {}. Number of blocks {} will be approximated to {}.".format(B,
             else:
                 featscore[self.featname[self.A[i]]] += HSIC_XY
 
-            for j in range(1, 11):
+            for j in range(1, self.max_neighbors + 1):
                 HSIC_XX = self.A_neighbors_score[i][j]
                 if self.featname[self.A_neighbors[i][j]] not in featscore:
                     featscore[self.featname[self.A_neighbors[i][j]]] = HSIC_XY * HSIC_XX
@@ -188,7 +259,7 @@ number of samples {}. Number of blocks {} will be approximated to {}.".format(B,
 
         fout = open(filename, 'w')
         sstr = 'Feature,Score,'
-        for j in range(1, 11):
+        for j in range(1, self.max_neighbors + 1):
             sstr = sstr + 'Neighbor %d, Neighbor %d score,' % (j, j)
 
         sstr = sstr + '\n'
@@ -197,7 +268,7 @@ number of samples {}. Number of blocks {} will be approximated to {}.".format(B,
             tmp = []
             tmp.append(self.featname[self.A[i]])
             tmp.append(str(self.path[self.A[i], -1:][0] / maxval))
-            for j in range(1, 11):
+            for j in range(1, self.max_neighbors + 1):
                 tmp.append(str(self.featname[self.A_neighbors[i][j]]))
                 tmp.append(str(self.A_neighbors_score[i][j]))
 
