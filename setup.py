@@ -4,17 +4,12 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
 import os
-from builtins import open
-
-from future import standard_library
 
 from setuptools import setup, find_packages
 
-standard_library.install_aliases()
-
 
 here = os.path.abspath(os.path.dirname(__file__))
-with open(os.path.join(here, "README.rst"), encoding="utf-8") as f:
+with open(os.path.join(here, "README.rst")) as f:
     long_description = f.read()
 
 
@@ -39,7 +34,7 @@ def _packages():
 
 setup(
     name="pyHSICLasso",
-    version="1.0.1",
+    version="1.2.2",
     author="Makoto Yamada",
     author_email="makoto.yamada@riken.jp",
     url="http://www.makotoyamada-ml.com/hsiclasso.html",

@@ -17,8 +17,8 @@ def input_csv_file(file_name):
     #Store the column name (Feature name)
     featname = df.columns[1:].tolist()
 
-    X_in = df.ix[:, 1:].as_matrix().T
-    Y_in = df.ix[:, 0].as_matrix().reshape(1, len(df.index))
+    X_in = df.ix[:, 1:].values.T
+    Y_in = df.ix[:, 0].values.reshape(1, len(df.index))
     return X_in, Y_in, featname
 
 
@@ -28,8 +28,8 @@ def input_tsv_file(file_name):
     # Store the column name (Feature name)
     featname = df.columns[1:].tolist()
 
-    X_in = df.ix[:, 1:].as_matrix().T
-    Y_in = df.ix[:, 0].as_matrix().reshape(1, len(df.index))
+    X_in = df.ix[:, 1:].values.T
+    Y_in = df.ix[:, 0].values.reshape(1, len(df.index))
     return X_in, Y_in, featname
 
 

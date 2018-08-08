@@ -14,7 +14,7 @@ from .kernel_tools import kernel_delta_norm, kernel_gaussian
 standard_library.install_aliases()
 
 
-def hsic_lasso(X_in, Y_in, y_kernel):
+def hsic_lasso(X_in, Y_in, y_kernel, x_kernel = 'Gauss'):
     """
     Input:
         X_in      input_data
@@ -32,12 +32,15 @@ def hsic_lasso(X_in, Y_in, y_kernel):
     H = np.eye(n) - 1 / n * np.ones(n)
 
     # Normalization
-    XX = X_in / (X_in.std(1)[:, None]) * np.sqrt(n - 1 / n)
+    if x_kernel == 'Gauss':
+        XX = X_in / (X_in.std(1)[:, None] + 10e-20) * np.sqrt(float(n - 1) / n)
+    else:
+        XX = X_in
 
     if y_kernel == "Delta":
         L = kernel_delta_norm(Y_in, Y_in)
     elif y_kernel == "Gauss":
-        YY = Y_in / (Y_in.std(1)[:, None] + 10e-20) * np.sqrt(n - 1 / n)
+        YY = Y_in / (Y_in.std(1)[:, None] + 10e-20) * np.sqrt(float(n - 1) / n)
         L = kernel_gaussian(YY, YY, 1.0)
 
     L = np.dot(H, np.dot(L, H))
@@ -49,7 +52,11 @@ def hsic_lasso(X_in, Y_in, y_kernel):
     X = np.zeros((n * n, d))
     X_ty = np.zeros((d, 1))
     for ii in range(d):
-        Kx = kernel_gaussian(XX[ii, None], XX[ii, None], 1.0)
+        if x_kernel == 'Gauss':
+            Kx = kernel_gaussian(XX[ii, None], XX[ii, None], 1.0)
+        elif x_kernel == 'Delta':
+            Kx = kernel_delta_norm(XX[ii, None], XX[ii, None])
+
         tmp = np.dot(np.dot(H, Kx), H)
 
         #Normalize HSIC tr(tmp*tmp) = 1

@@ -11,6 +11,7 @@ import scipy.spatial.distance as distance
 from scipy.cluster.hierarchy import  linkage
 from future import standard_library
 from six import string_types
+import warnings
 
 from .hsic_lasso import hsic_lasso
 from .input_data import input_csv_file, input_matlab_file, input_tsv_file
@@ -54,59 +55,84 @@ class HSICLasso(object):
         self._check_shape()
         return True
 
-    def regression(self, num_feat=5, max_neighbors=10):
-        if self.X_in is None or self.Y_in is None:
-            raise UnboundLocalError("Input your data")
 
-        self.max_neighbors = max_neighbors
-
-        self.X, self.X_ty = hsic_lasso(self.X_in, self.Y_in, "Gauss")
-        self.path, self.beta, self.A, self.lam, \
-        self.A_neighbors, self.A_neighbors_score = nlars(self.X,
-                                                         self.X_ty, num_feat, self.max_neighbors)
+    def regression(self, num_feat=5, B=0, M=1, discrete_x=False, max_neighbors=10):
+        self._run_hsic_lasso(num_feat=num_feat,
+                             y_kernel="Gauss",
+                             B=B, M=M,
+                             discrete_x=discrete_x,
+                             max_neighbors=max_neighbors)
 
         return True
 
-    def classification(self, num_feat=5, max_neighbors=10):
-        if self.X_in is None or self.Y_in is None:
-            raise UnboundLocalError("Input your data")
 
-        self.max_neighbors = max_neighbors
-
-        self.Y_in = (np.sign(self.Y_in) + 1) / 2 + 1
-        self.X, self.X_ty = hsic_lasso(self.X_in, self.Y_in, "Delta")
-        self.path, self.beta, self.A, self.lam, \
-        self.A_neighbors, self.A_neighbors_score = nlars(self.X,
-                                                         self.X_ty, num_feat, self.max_neighbors)
+    def classification(self, num_feat=5, B=0, M=1, discrete_x=False, max_neighbors=10):
+        self._run_hsic_lasso(num_feat=num_feat,
+                             y_kernel="Delta",
+                             B=B, M=M,
+                             discrete_x=discrete_x,
+                             max_neighbors=max_neighbors)
 
         return True
 
-    #For kernel Hierarchical Clustering
-    def linkage(self,method='ward'):
+
+    def _run_hsic_lasso(self, y_kernel, num_feat, B, M, discrete_x, max_neighbors):
+        if self.X_in is None or self.Y_in is None:
+            raise UnboundLocalError("Input your data")
+        self.max_neighbors = max_neighbors
+        n = self.X_in.shape[1]
+        B = B if B else n
+        x_kernel = "Delta" if discrete_x else "Gauss"
+        if x_kernel == "Delta":
+            self.Y_in = (np.sign(self.Y_in) + 1) / 2 + 1
+        numblocks = n / B
+        discarded = n % B
+        if discarded:
+            warnings.warn("B {} must be an exact divisor of the \
+number of samples {}. Number of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)), RuntimeWarning)
+            numblocks = int(numblocks)
+        perms = 1 + bool(numblocks - 1) * (M - 1)
+        for p in range(perms):
+            self._permute_data(p)
+            for i in range(0, n - discarded, B):
+                j = min(n, i + B)
+                X, X_ty = hsic_lasso(
+                    self.X_in[:, i:j], self.Y_in[:, i:j], y_kernel, x_kernel)
+                self.X = np.vstack((self.X, X)) if i + p else X
+                self.X_ty = self.X_ty + X_ty if i + p else X_ty
+        self.X = np.sqrt(1 / (numblocks * perms)) * self.X
+        self.X_ty = 1 / (numblocks * perms) * self.X_ty
+        self.path, self.beta, self.A, self.lam, self.A_neighbors, \
+            self.A_neighbors_score = nlars(
+                self.X, self.X_ty, num_feat, self.max_neighbors)
+
+        return True
+
+
+    # For kernel Hierarchical Clustering
+    def linkage(self, method="ward"):
         if self.A is None:
             raise UnboundLocalError("Run regression/classification first")
-
-        #selected feature name
+        # selected feature name
         featname_index = []
         featname_selected = []
-        for i in range(len(self.A)-1):
+        for i in range(len(self.A) - 1):
             for index in self.A_neighbors[i]:
                 if index not in featname_index:
                     featname_index.append(index)
                     featname_selected.append(self.featname[index])
-
         self.hclust_featname = featname_selected
         self.hclust_featnameindex = featname_index
-
-        sim = np.dot(self.X[:,featname_index].transpose(), self.X[:,featname_index])
+        sim = np.dot(self.X[:, featname_index].transpose(),
+                     self.X[:, featname_index])
         dist = 1 - sim
-        dist = np.maximum(0,dist - np.diag(np.diag(dist)))
-
+        dist = np.maximum(0, dist - np.diag(np.diag(dist)))
         dist_sym = (dist + dist.transpose()) / 2.0
-        self.linkage_dist = linkage(distance.squareform(dist_sym),method)
+        self.linkage_dist = linkage(distance.squareform(dist_sym), method)
 
         return True
-
+  
+  
     def dump(self):
 
         #To normalize the feature importance
@@ -311,10 +337,18 @@ class HSICLasso(object):
         return True
 
     def _check_shape(self):
-        x_row_len, x_col_len = self.X_in.shape
+        _, x_col_len = self.X_in.shape
         y_row_len, y_col_len = self.Y_in.shape
         if y_row_len != 1:
             raise ValueError("Check your input data")
         if x_col_len != y_col_len:
             raise ValueError("Check your input data")
         return True
+
+    def _permute_data(self, seed = None):
+        np.random.seed(seed)
+        n = self.X_in.shape[1]
+
+        perm = np.random.permutation(n)
+        self.X_in = self.X_in[:,perm]
+        self.Y_in = self.Y_in[:,perm]
