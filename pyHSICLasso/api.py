@@ -9,6 +9,7 @@ from builtins import range
 import numpy as np
 from future import standard_library
 from six import string_types
+import warnings
 
 from .hsic_lasso import hsic_lasso
 from .input_data import input_csv_file, input_matlab_file, input_tsv_file
@@ -50,19 +51,11 @@ class HSICLasso(object):
 
     def regression(self, num_feat = 5, B = 0, M = 1):
 
-        if self.X_in is None or self.Y_in is None:
-            raise UnboundLocalError("Input your data")
-
         return self._run_hsic_lasso(num_feat = num_feat,
                                     y_kernel = 'Gauss',
                                     B = B, M = M)
 
     def classification(self, num_feat = 5, B = 0, M = 1):
-
-        if self.X_in is None or self.Y_in is None:
-            raise UnboundLocalError("Input your data")
-
-        self.Y_in = (np.sign(self.Y_in) + 1) / 2 + 1
 
         return self._run_hsic_lasso(num_feat = num_feat,
                                     y_kernel = 'Delta',
@@ -70,13 +63,18 @@ class HSICLasso(object):
 
     def _run_hsic_lasso(self, y_kernel, num_feat, B, M):
 
+        if self.X_in is None or self.Y_in is None:
+            raise UnboundLocalError("Input your data")
+
         n = self.X_in.shape[1]
         B = B if B else n
         numblocks = n/B
+        discarded = n % B
 
-        if not numblocks.is_integer():
-            raise UnboundLocalError("B {} must be an exact divisor of the \
-number of samples {}".format(B, n))
+        if discarded:
+            warnings.warn("B {} must be an exact divisor of the \
+number of samples {}. Number of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)), RuntimeWarning)
+            numblocks = int(numblocks)
 
         perms = 1 + bool(numblocks - 1) * (M - 1)
         
@@ -84,7 +82,7 @@ number of samples {}".format(B, n))
 
             self._permute_data(p)
 
-            for i in range(0, n, B):
+            for i in range(0, n - discarded, B):
                 j = min(n, i+B)
                 X, Xty = hsic_lasso(self.X_in[:,i:j], self.Y_in[:,i:j], y_kernel)
                 self.X = np.vstack((self.X, X)) if i+p else X
