@@ -49,25 +49,28 @@ class HSICLasso(object):
         self._check_shape()
         return True
 
-    def regression(self, num_feat = 5, B = 0, M = 1):
+    def regression(self, num_feat = 5, B = 0, M = 1, discrete_x = False):
 
         return self._run_hsic_lasso(num_feat = num_feat,
                                     y_kernel = 'Gauss',
-                                    B = B, M = M)
+                                    B = B, M = M,
+                                    discrete_x = discrete_x)
 
-    def classification(self, num_feat = 5, B = 0, M = 1):
+    def classification(self, num_feat = 5, B = 0, M = 1, discrete_x = False):
 
         return self._run_hsic_lasso(num_feat = num_feat,
                                     y_kernel = 'Delta',
-                                    B = B, M = M)
+                                    B = B, M = M,
+                                    discrete_x = discrete_x)
 
-    def _run_hsic_lasso(self, y_kernel, num_feat, B, M):
+    def _run_hsic_lasso(self, y_kernel, num_feat, B, M, discrete_x):
 
         if self.X_in is None or self.Y_in is None:
             raise UnboundLocalError("Input your data")
 
         n = self.X_in.shape[1]
         B = B if B else n
+        x_kernel = 'Delta' if discrete_x else 'Gauss'
         numblocks = n/B
         discarded = n % B
 
@@ -84,7 +87,7 @@ number of samples {}. Number of blocks {} will be approximated to {}.".format(B,
 
             for i in range(0, n - discarded, B):
                 j = min(n, i+B)
-                X, Xty = hsic_lasso(self.X_in[:,i:j], self.Y_in[:,i:j], y_kernel)
+                X, Xty = hsic_lasso(self.X_in[:,i:j], self.Y_in[:,i:j], y_kernel, x_kernel)
                 self.X = np.vstack((self.X, X)) if i+p else X
                 self.Xty = self.Xty + Xty if i+p else Xty
 
