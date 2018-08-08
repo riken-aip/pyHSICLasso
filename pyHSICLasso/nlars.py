@@ -12,7 +12,7 @@ from future import standard_library
 standard_library.install_aliases()
 
 
-def nlars(X, X_ty, num_feat):
+def nlars(X, X_ty, num_feat, max_neighbors):
     """
     We used the Nonnegative LARS solver.
     http://www2.imm.dtu.dk/pubdb/views/edoc_download.php/5523/zip/imm5523.zip
@@ -118,7 +118,7 @@ def nlars(X, X_ty, num_feat):
     XtXA = np.dot(X.transpose(), X[:, A_sorted])
 
     #Search up to 10 nighbors
-    num_neighbors = 11
+    num_neighbors = max_neighbors + 1
     for i in range(0,len(A_sorted)):
         tmp = XtXA[:,i]
         sort_index = sorted(range(len(tmp)), key=lambda k: tmp[k], reverse=True)

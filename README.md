@@ -27,8 +27,13 @@ This class has the following methods.
 - regression
 - classification
 - dump
-- plot
+- plot_path
+- plot_dendrogram
+- get_features
+- get_features_neighbors
 - get_index
+- get_index_neighbors
+- get_index_neighbors_score
 
 The input format corresponds to the following formats.
 
@@ -38,7 +43,17 @@ The input format corresponds to the following formats.
 - python's list
 - numpy's ndarray
 
-When using .mat, .csv, .tsv, it is better to use pandas dataframe. The rows of the dataframe are  sample number. The first column is classification value. The remaining columns are values of each features.
+When using .mat, .csv, .tsv, it is better to use pandas dataframe. 
+The rows of the dataframe are  sample number. The first column is classification value. 
+The remaining columns are values of each features. The following is a sample data (csv format). 
+
+```
+class,v1,v2,v3,v4,v5,v6,v7,v8,v9,v10
+-1,2,0,0,0,-2,0,-2,0,2,0
+1,2,2,0,0,-2,0,0,0,2,0
+...
+
+```
 
 When using python's list or numpy's ndarray, Let each index be sample number, let values of each features for X[ind] and classification value for Y[ind].
 
@@ -83,11 +98,19 @@ About output method, it is possible to select plots on the graph, details of the
 >>> hsic_lasso.get_index()
 [1422, 512, 248, 1670, 779]
 
+>>> hsic_lasso.get_features()
+['v1423', 'v513', 'v249', 'v1671', 'v780']
+
 >>> hsic_lasso.get_index_neighbors(feat_index=0,num_neighbors=5)
 [492, 1673, 244, 266, 414]
 
+>>> hsic_lasso.get_features_neighbors(feat_index=0,num_neighbors=5)
+['v493', 'v1674', 'v245', 'v267', 'v415']
+
 >>> hsic_lasso.get_index_neighbors_score(feat_index=0,num_neighbors=5)
-array([ 0.412915 ,  0.38446  ,  0.38446  ,  0.38446  ,  0.3462652])
+[ 0.412915 ,  0.38446  ,  0.38446  ,  0.38446  ,  0.3462652]
+
+
 
 ```
 ![graph](https://www.fastpic.jp/images.php?file=6530104232.png)
