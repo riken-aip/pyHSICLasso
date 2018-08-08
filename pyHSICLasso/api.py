@@ -51,25 +51,20 @@ class HSICLasso(object):
 
     def regression(self, num_feat = 5, B = 0, M = 1):
 
-        if self.X_in is None or self.Y_in is None:
-            raise UnboundLocalError("Input your data")
-
         return self._run_hsic_lasso(num_feat = num_feat,
                                     y_kernel = 'Gauss',
                                     B = B, M = M)
 
     def classification(self, num_feat = 5, B = 0, M = 1):
 
-        if self.X_in is None or self.Y_in is None:
-            raise UnboundLocalError("Input your data")
-
-        self.Y_in = (np.sign(self.Y_in) + 1) / 2 + 1
-
         return self._run_hsic_lasso(num_feat = num_feat,
                                     y_kernel = 'Delta',
                                     B = B, M = M)
 
     def _run_hsic_lasso(self, y_kernel, num_feat, B, M):
+
+        if self.X_in is None or self.Y_in is None:
+            raise UnboundLocalError("Input your data")
 
         n = self.X_in.shape[1]
         B = B if B else n
