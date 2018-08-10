@@ -75,7 +75,6 @@ class HSICLasso(object):
 
         return True
 
-
     def _run_hsic_lasso(self, y_kernel, num_feat, B, M, discrete_x, max_neighbors):
         if self.X_in is None or self.Y_in is None:
             raise UnboundLocalError("Input your data")
@@ -87,27 +86,31 @@ class HSICLasso(object):
             self.Y_in = (np.sign(self.Y_in) + 1) / 2 + 1
         numblocks = n / B
         discarded = n % B
+
         if discarded:
-            warnings.warn("B {} must be an exact divisor of the \
-number of samples {}. Number of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)), RuntimeWarning)
+            msg = "B {} must be an exact divisor of the number of samples {}. Number \
+of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks))
+            warnings.warn(msg, RuntimeWarning)
             numblocks = int(numblocks)
+
         perms = 1 + bool(numblocks - 1) * (M - 1)
+        self.X = []
+        
         for p in range(perms):
             self._permute_data(p)
             for i in range(0, n - discarded, B):
-                j = min(n, i + B)
-                X, X_ty = hsic_lasso(
-                    self.X_in[:, i:j], self.Y_in[:, i:j], y_kernel, x_kernel)
-                self.X = np.vstack((self.X, X)) if i + p else X
-                self.X_ty = self.X_ty + X_ty if i + p else X_ty
-        self.X = np.sqrt(1 / (numblocks * perms)) * self.X
-        self.X_ty = 1 / (numblocks * perms) * self.X_ty
+                j = min(n, i+B)
+                X, Xty = hsic_lasso(self.X_in[:,i:j], self.Y_in[:,i:j], y_kernel, x_kernel)
+                self.X.append(X)
+                self.Xty = self.Xty + Xty if i+p else Xty
+        
+        self.X = np.concatenate(self.X, axis = 0) * np.sqrt(1/(numblocks * perms))
+        self.Xty = self.Xty * 1/(numblocks * perms)
         self.path, self.beta, self.A, self.lam, self.A_neighbors, \
             self.A_neighbors_score = nlars(
-                self.X, self.X_ty, num_feat, self.max_neighbors)
+                self.X, self.Xty, num_feat, self.max_neighbors)
 
         return True
-
 
     # For kernel Hierarchical Clustering
     def linkage(self, method="ward"):
@@ -131,8 +134,7 @@ number of samples {}. Number of blocks {} will be approximated to {}.".format(B,
         self.linkage_dist = linkage(distance.squareform(dist_sym), method)
 
         return True
-  
-  
+
     def dump(self):
 
         #To normalize the feature importance
