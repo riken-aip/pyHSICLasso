@@ -114,7 +114,7 @@ array([0.09723658, 0.05218047, 0.03264885, 0.01360242, 0.00319763])
 [99, 384, 1761, 761, 1384]
 
 >>> hsic_lasso.get_features_neighbors(feat_index=0,num_neighbors=5)
-'100', '385', '1762', '762', '1385']
+['100', '385', '1762', '762', '1385']
 
 >>> hsic_lasso.get_index_neighbors_score(feat_index=0,num_neighbors=5)
 array([0.9789888 , 0.10350618, 0.09757666, 0.09751763, 0.09678892])
