@@ -47,8 +47,9 @@ def kernel_gaussian(X_in_1, X_in_2, sigma):
     n_1 = X_in_1.shape[1]
     n_2 = X_in_2.shape[1]
     X_in_12 = np.sum(np.power(X_in_1, 2), 0)
+    X_in_12 = np.expand_dims(X_in_12, 0)
     X_in_22 = np.sum(np.power(X_in_2, 2), 0)
-    dist_2 = np.tile(X_in_22, (n_1, 1)) + \
-        np.tile(X_in_12, (n_2, 1)).transpose() - 2 * np.dot(X_in_1.T, X_in_2)
+    X_in_22 = np.expand_dims(X_in_22, 0)
+    dist_2 = (X_in_12 + X_in_22.T) - 2 * np.dot(X_in_1.T, X_in_2)
     K = np.exp(-dist_2 / (2 * np.power(sigma, 2)))
     return K
