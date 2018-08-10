@@ -134,15 +134,13 @@ number of samples {}. Number of blocks {} will be approximated to {}.".format(B,
   
   
     def dump(self):
-
-        #To normalize the feature importance
-        maxval = self.path[self.A[0],-1:][0]
+        maxval = self.beta[self.A[0]][0]
         print("============================================== HSICLasso : Result ==================================================")
         print("| Order | Feature      | Score | Top-5 Related Feature (Relatedness Score)                                          |")
         for i in range(len(self.A)):
             print("| {:<5} | {:<12} | {:.3f} | {:<12} ({:.3f}), {:<12} ({:.3f}),"
                   " {:<12} ({:.3f}), {:<12} ({:.3f}), {:<12} ({:.3f})|".format(i+1,self.featname[self.A[i]],
-                                                                            self.path[self.A[i],-1:][0]/maxval,
+                                                                            self.beta[self.A[i]][0]/maxval,
                                                                             self.featname[self.A_neighbors[i][1]],self.A_neighbors_score[i][1],
                                                                             self.featname[self.A_neighbors[i][2]],self.A_neighbors_score[i][2],
                                                                             self.featname[self.A_neighbors[i][3]],self.A_neighbors_score[i][3],
@@ -186,6 +184,9 @@ number of samples {}. Number of blocks {} will be approximated to {}.".format(B,
     def get_index(self):
         return self.A
 
+    def get_index_score(self):
+        return self.beta[self.A,-1]
+
     def get_index_neighbors(self,feat_index=0,num_neighbors=5):
         if feat_index > len(self.A) -1:
             raise ValueError("Index does not exist")
@@ -215,12 +216,14 @@ number of samples {}. Number of blocks {} will be approximated to {}.".format(B,
         return True
 
     def save_score(self,filename='aggregated_score.csv'):
-        maxval = self.path[self.A[0], -1:][0]
+        maxval =  self.beta[self.A[0]][0]
+
+        #print(maxval + ' ' + maxval_)
         fout = open(filename,'w')
         featscore = {}
         featcorrcoeff = {}
         for i in range(len(self.A)):
-            HSIC_XY = (self.path[self.A[i], -1:][0] / maxval)
+            HSIC_XY = (self.beta[self.A[i]][0] / maxval)
 
             if self.featname[self.A[i]] not in featscore:
                 featscore[self.featname[self.A[i]]] = HSIC_XY
@@ -255,7 +258,7 @@ number of samples {}. Number of blocks {} will be approximated to {}.".format(B,
 
     def save_param(self,filename='param.csv'):
         # Save parameters
-        maxval = self.path[self.A[0], -1:][0]
+        maxval = self.beta[self.A[0]][0]
 
         fout = open(filename, 'w')
         sstr = 'Feature,Score,'
@@ -267,7 +270,7 @@ number of samples {}. Number of blocks {} will be approximated to {}.".format(B,
         for i in range(len(self.A)):
             tmp = []
             tmp.append(self.featname[self.A[i]])
-            tmp.append(str(self.path[self.A[i], -1:][0] / maxval))
+            tmp.append(str(self.beta[self.A[i]][0] / maxval))
             for j in range(1, self.max_neighbors + 1):
                 tmp.append(str(self.featname[self.A_neighbors[i][j]]))
                 tmp.append(str(self.A_neighbors_score[i][j]))
