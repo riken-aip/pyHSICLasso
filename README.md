@@ -1,9 +1,15 @@
 # pyHSICLasso
 [![Build Status](https://travis-ci.org/riken-aip/pyHSICLasso.svg?branch=master)](https://travis-ci.org/riken-aip/pyHSICLasso)
 
-pyHSICLasso is a supervised feature selection considering the dependency of nonlinear input and output.
+pyHSICLasso is a package of the Hilbert Schmidt Independence Criterion Lasso (HSIC Lasso), which is a nonlinear feature selection method considering the nonlinear input and output relationship.
 
-## What can you do with this?
+## Advantage of HSIC Lasso
+
+- Can find nonlinearly related features efficiently.
+- Can obtain a globally optimal solution.
+- Can deal with both regression and classification problems through kernels. 
+
+## Feature Selection
 The goal of supervised feature selection is to find a subset of input features that are responsible for predicting output values. By using this, you can supplement the dependence of nonlinear input and output and you can calculate the optimal solution efficiently for high dimensional problem. The effectiveness are demonstrated through feature selection experiments for classification and regression with thousands of features. Finding a subset of features in high-dimensional supervised learning is an important problem with many real- world applications such as gene selection from microarray data, document categorization, and prosthesis control.
 
 ## Install
@@ -32,6 +38,7 @@ This class has the following methods.
 - get_features
 - get_features_neighbors
 - get_index
+- get_index_score
 - get_index_neighbors
 - get_index_neighbors_score
 
@@ -88,27 +95,29 @@ About output method, it is possible to select plots on the graph, details of the
 
 >>> hsic_lasso.dump()
 ============================================== HSICLasso : Result ==================================================
-| Order | Feature     | Score | Top-5 Related Feature (Relatedness Score)                                          |
-| 1     | v1423       | 1.000 | v493    (0.413), v1674   (0.384), v245    (0.384), v267    (0.384), v415    (0.346)|
-| 2     | v513        | 0.765 | v365    (0.563), v1648   (0.487), v1139   (0.456), v1912   (0.450), v241    (0.446)|
-| 3     | v249        | 0.679 | v267    (0.544), v245    (0.544), v822    (0.381), v824    (0.374), v1897   (0.343)|
-| 4     | v1671       | 0.639 | v513    (0.231), v1263   (0.217), v1771   (0.202), v1912   (0.197), v187    (0.179)|
-| 5     | v780        | 0.116 | v513    (0.439), v26     (0.439), v571    (0.410), v127    (0.369), v91     (0.361)|
-
+| Order | Feature      | Score | Top-5 Related Feature (Relatedness Score)                                          |
+| 1     | 1100         | 1.000 | 100          (0.979), 385          (0.104), 1762         (0.098), 762          (0.098), 1385         (0.097)|
+| 2     | 100          | 0.537 | 1100         (0.979), 385          (0.100), 1762         (0.095), 762          (0.094), 1385         (0.092)|
+| 3     | 200          | 0.336 | 1200         (0.979), 264          (0.094), 1482         (0.094), 1264         (0.093), 482          (0.091)|
+| 4     | 1300         | 0.140 | 300          (0.984), 1041         (0.107), 1450         (0.104), 1869         (0.102), 41           (0.101)|
+| 5     | 300          | 0.033 | 1300         (0.984), 1041         (0.110), 41           (0.106), 1450         (0.100), 1869         (0.099)|
 >>> hsic_lasso.get_index()
-[1422, 512, 248, 1670, 779]
+[1099, 99, 199, 1299, 299]
+
+>>> hsic_lasso.get_index_score()
+array([0.09723658, 0.05218047, 0.03264885, 0.01360242, 0.00319763])
 
 >>> hsic_lasso.get_features()
-['v1423', 'v513', 'v249', 'v1671', 'v780']
+['1100', '100', '200', '1300', '300']
 
 >>> hsic_lasso.get_index_neighbors(feat_index=0,num_neighbors=5)
-[492, 1673, 244, 266, 414]
+[99, 384, 1761, 761, 1384]
 
 >>> hsic_lasso.get_features_neighbors(feat_index=0,num_neighbors=5)
-['v493', 'v1674', 'v245', 'v267', 'v415']
+'100', '385', '1762', '762', '1385']
 
 >>> hsic_lasso.get_index_neighbors_score(feat_index=0,num_neighbors=5)
-[ 0.412915 ,  0.38446  ,  0.38446  ,  0.38446  ,  0.3462652]
+array([0.9789888 , 0.10350618, 0.09757666, 0.09751763, 0.09678892])
 
 
 
@@ -117,8 +126,8 @@ About output method, it is possible to select plots on the graph, details of the
 
 
 ## Contributors
-### Auther
-Name : Makoto Yamada
+### Developers
+Name : Makoto Yamada, Héctor Climente-González
 
 E-mail : makoto.yamada@riken.jp
 
