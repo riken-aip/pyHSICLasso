@@ -11,28 +11,35 @@ standard_library.install_aliases()
 
 
 def kernel_delta_norm(X_in_1, X_in_2):
+
     n_1 = X_in_1.shape[1]
     n_2 = X_in_2.shape[1]
     K = np.zeros((n_1, n_2))
+
     u_list = np.unique(X_in_1)
     for ind in u_list:
-        c_1 = np.sqrt(np.sum(X_in_1 == ind))
-        c_2 = np.sqrt(np.sum(X_in_2 == ind))
-        ind_1 = np.where(X_in_1 == ind)[1]
-        ind_2 = np.where(X_in_2 == ind)[1]
-        K[np.ix_(ind_1, ind_2)] = 1 / c_1 / c_2
+        ind_1 = (X_in_1 == ind)
+        ind_2 = (X_in_2 == ind)
+        idx = (ind_1 & ind_2.T)
+        c_1 = np.sqrt(np.count_nonzero(ind_1))
+        c_2 = np.sqrt(np.count_nonzero(ind_2))
+        K[idx] = 1 / c_1 / c_2
     return K
 
 
 def kernel_delta(X_in_1, X_in_2):
+    
     n_1 = X_in_1.shape[1]
     n_2 = X_in_2.shape[1]
     K = np.zeros((n_1, n_2))
     u_list = np.unique(X_in_1)
     for ind in u_list:
-        ind_1 = np.where(X_in_1 == ind)[1]
-        ind_2 = np.where(X_in_2 == ind)[1]
-        K[np.ix_(ind_1, ind_2)] = 1
+        ind_1 = (X_in_1 == ind)
+        ind_2 = (X_in_2 == ind)
+        idx = (ind_1 & ind_2.T)
+        c_1 = np.sqrt(np.count_nonzero(ind_1))
+        c_2 = np.sqrt(np.count_nonzero(ind_2))
+        K[idx] = 1
     return K
 
 
