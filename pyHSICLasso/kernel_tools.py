@@ -37,15 +37,11 @@ def kernel_delta(X_in_1, X_in_2):
         ind_1 = (X_in_1 == ind)
         ind_2 = (X_in_2 == ind)
         idx = (ind_1 & ind_2.T)
-        c_1 = np.sqrt(np.count_nonzero(ind_1))
-        c_2 = np.sqrt(np.count_nonzero(ind_2))
         K[idx] = 1
     return K
 
 
 def kernel_gaussian(X_in_1, X_in_2, sigma):
-    n_1 = X_in_1.shape[1]
-    n_2 = X_in_2.shape[1]
     X_in_12 = np.sum(np.power(X_in_1, 2), 0)
     X_in_12 = np.expand_dims(X_in_12, 0)
     X_in_22 = np.sum(np.power(X_in_2, 2), 0)
