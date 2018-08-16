@@ -37,11 +37,16 @@ def hsic_lasso(X_in, Y_in, y_kernel, x_kernel = 'Gauss'):
     else:
         XX = X_in
 
+    dy = Y_in.shape[0]
+
     if y_kernel == "Delta":
+        if dy > 1:
+            raise ValueError("Delta kernel only supports 1 dimensional class labels.")
+
         L = kernel_delta_norm(Y_in, Y_in)
     elif y_kernel == "Gauss":
         YY = Y_in / (Y_in.std(1)[:, None] + 10e-20) * np.sqrt(float(n - 1) / n)
-        L = kernel_gaussian(YY, YY, 1.0)
+        L = kernel_gaussian(YY, YY, np.sqrt(dy))
 
     L = np.dot(H, np.dot(L, H))
 
