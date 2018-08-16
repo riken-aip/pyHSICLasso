@@ -83,8 +83,6 @@ class HSICLasso(object):
         n = self.X_in.shape[1]
         B = B if B else n
         x_kernel = "Delta" if discrete_x else "Gauss"
-        if x_kernel == "Delta":
-            self.Y_in = (np.sign(self.Y_in) + 1) / 2 + 1
         numblocks = n / B
         discarded = n % B
         if discarded:
