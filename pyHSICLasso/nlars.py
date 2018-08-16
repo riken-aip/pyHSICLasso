@@ -6,6 +6,7 @@ from __future__ import (absolute_import, division, print_function,
 
 from builtins import range
 
+from scipy.sparse import lil_matrix
 import numpy as np
 from future import standard_library
 
@@ -42,10 +43,8 @@ def nlars(X, X_ty, num_feat, max_neighbors):
     A_neighbors = []
     A_neighbors_score = []
     beta = np.zeros((d, 1))
-    path = np.zeros((d, 4 * d))
+    path = lil_matrix((d, 4 * d))
     lam = np.zeros((1, 4 * d))
-
-    path[:, 0] = beta.transpose()
 
     I = list(range(d))
 
@@ -93,7 +92,7 @@ def nlars(X, X_ty, num_feat, max_neighbors):
         C = max(c[I])
 
         k += 1
-        path[:, k] = beta.transpose()
+        path[:, k] = beta
 
         if len(C) == 0:
             lam[k] = 0
@@ -125,7 +124,7 @@ def nlars(X, X_ty, num_feat, max_neighbors):
         A_neighbors.append(sort_index[0:num_neighbors])
         A_neighbors_score.append(tmp[sort_index[0:num_neighbors]])
 
-    path_final = path[:, 0:(k + 1)]
+    path_final = path[:, 0:(k + 1)].toarray()
     lam_final = lam[0:(k + 1)]
 
     return path_final, beta, A_sorted, lam_final, A_neighbors, A_neighbors_score
