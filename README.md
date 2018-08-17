@@ -53,8 +53,10 @@ The input format corresponds to the following formats.
 - python's list
 - numpy's ndarray
 
-When using .mat, .csv, .tsv, it is better to use pandas dataframe. 
-The rows of the dataframe are  sample number. The first column is classification value. 
+## Input file
+When using .mat, .csv, .tsv, we support pandas dataframe. 
+The rows of the dataframe are sample number. The output variable should have `class` tag. 
+If you wish to use your own tag, you need to specify the output variables by list (`output_list=['tag']`) 
 The remaining columns are values of each features. The following is a sample data (csv format). 
 
 ```
@@ -66,6 +68,8 @@ class,v1,v2,v3,v4,v5,v6,v7,v8,v9,v10
 ```
 
 When using python's list or numpy's ndarray, Let each index be sample number, let values of each features for X[ind] and classification value for Y[ind].
+
+## Example
 
 ```py
 >>> from pyHSICLasso import HSICLasso

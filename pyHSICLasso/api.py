@@ -315,12 +315,12 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
                 raise TypeError("Check arg type")
         return True
 
-    def _input_data_file(self, file_name):
+    def _input_data_file(self, file_name,output_list=['class']):
         ext = file_name[-4:]
         if ext == ".csv":
-            self.X_in, self.Y_in, self.featname = input_csv_file(file_name)
+            self.X_in, self.Y_in, self.featname = input_csv_file(file_name,output_list=output_list)
         elif ext == ".tsv":
-            self.X_in, self.Y_in, self.featname = input_tsv_file(file_name)
+            self.X_in, self.Y_in, self.featname = input_tsv_file(file_name,output_list=output_list)
         elif ext == ".mat":
             self.X_in, self.Y_in, self.featname = input_matlab_file(file_name)
         return True
