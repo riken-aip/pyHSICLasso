@@ -1,5 +1,6 @@
 # pyHSICLasso
 [![pypi](https://img.shields.io/pypi/v/pyHSICLasso.svg)](https://pypi.python.org/pypi/pyHSICLasso)
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 [![Build Status](https://travis-ci.org/riken-aip/pyHSICLasso.svg?branch=master)](https://travis-ci.org/riken-aip/pyHSICLasso)
 
 pyHSICLasso is a package of the Hilbert Schmidt Independence Criterion Lasso (HSIC Lasso), which is a nonlinear feature selection method considering the nonlinear input and output relationship.
