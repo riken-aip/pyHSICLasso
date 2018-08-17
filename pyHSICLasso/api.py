@@ -40,10 +40,10 @@ class HSICLasso(object):
         self.hclust_featnameindex = None
         self.max_neighbors = 10
 
-    def input(self, *args):
+    def input(self, *args,output_list=['class']):
         self._check_args(args)
         if isinstance(args[0], string_types):
-            self._input_data_file(args[0])
+            self._input_data_file(args[0],output_list=output_list)
         elif isinstance(args[0], list):
             self._input_data_list(args[0], args[1])
         elif isinstance(args[0], np.ndarray):
