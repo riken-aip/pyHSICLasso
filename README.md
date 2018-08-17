@@ -1,4 +1,6 @@
 # pyHSICLasso
+[![pypi](https://img.shields.io/pypi/v/pyHSICLasso.svg)](https://pypi.python.org/pypi/pyHSICLasso)
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 [![Build Status](https://travis-ci.org/riken-aip/pyHSICLasso.svg?branch=master)](https://travis-ci.org/riken-aip/pyHSICLasso)
 
 pyHSICLasso is a package of the Hilbert Schmidt Independence Criterion Lasso (HSIC Lasso), which is a nonlinear feature selection method considering the nonlinear input and output relationship.
@@ -35,6 +37,7 @@ This class has the following methods.
 - dump
 - plot_path
 - plot_dendrogram
+- plot_heatmap
 - get_features
 - get_features_neighbors
 - get_index
@@ -50,8 +53,10 @@ The input format corresponds to the following formats.
 - python's list
 - numpy's ndarray
 
-When using .mat, .csv, .tsv, it is better to use pandas dataframe. 
-The rows of the dataframe are  sample number. The first column is classification value. 
+## Input file
+When using .mat, .csv, .tsv, we support pandas dataframe. 
+The rows of the dataframe are sample number. The output variable should have `class` tag. 
+If you wish to use your own tag, you need to specify the output variables by list (`output_list=['tag']`) 
 The remaining columns are values of each features. The following is a sample data (csv format). 
 
 ```
@@ -63,6 +68,8 @@ class,v1,v2,v3,v4,v5,v6,v7,v8,v9,v10
 ```
 
 When using python's list or numpy's ndarray, Let each index be sample number, let values of each features for X[ind] and classification value for Y[ind].
+
+## Example
 
 ```py
 >>> from pyHSICLasso import HSICLasso

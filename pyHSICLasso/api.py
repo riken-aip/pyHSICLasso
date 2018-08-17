@@ -40,10 +40,10 @@ class HSICLasso(object):
         self.hclust_featnameindex = None
         self.max_neighbors = 10
 
-    def input(self, *args):
+    def input(self, *args,output_list=['class']):
         self._check_args(args)
         if isinstance(args[0], string_types):
-            self._input_data_file(args[0])
+            self._input_data_file(args[0],output_list)
         elif isinstance(args[0], list):
             self._input_data_list(args[0], args[1])
         elif isinstance(args[0], np.ndarray):
@@ -315,12 +315,12 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
                 raise TypeError("Check arg type")
         return True
 
-    def _input_data_file(self, file_name):
+    def _input_data_file(self, file_name,output_list):
         ext = file_name[-4:]
         if ext == ".csv":
-            self.X_in, self.Y_in, self.featname = input_csv_file(file_name)
+            self.X_in, self.Y_in, self.featname = input_csv_file(file_name,output_list=output_list)
         elif ext == ".tsv":
-            self.X_in, self.Y_in, self.featname = input_tsv_file(file_name)
+            self.X_in, self.Y_in, self.featname = input_tsv_file(file_name,output_list=output_list)
         elif ext == ".mat":
             self.X_in, self.Y_in, self.featname = input_matlab_file(file_name)
         return True
@@ -342,10 +342,10 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
     def _check_shape(self):
         _, x_col_len = self.X_in.shape
         y_row_len, y_col_len = self.Y_in.shape
-        if y_row_len != 1:
-            raise ValueError("Check your input data")
+        #if y_row_len != 1:
+        #    raise ValueError("Check your input data")
         if x_col_len != y_col_len:
-            raise ValueError("Check your input data")
+            raise ValueError("The number of samples in input and output should be same")
         return True
 
     def _permute_data(self, seed = None):
