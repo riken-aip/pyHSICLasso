@@ -1,4 +1,5 @@
 # pyHSICLasso
+[![pypi](https://img.shields.io/pypi/v/pyHSICLasso.svg)](https://pypi.python.org/pypi/pyHSICLasso)
 [![Build Status](https://travis-ci.org/riken-aip/pyHSICLasso.svg?branch=master)](https://travis-ci.org/riken-aip/pyHSICLasso)
 
 pyHSICLasso is a package of the Hilbert Schmidt Independence Criterion Lasso (HSIC Lasso), which is a nonlinear feature selection method considering the nonlinear input and output relationship.
@@ -35,6 +36,7 @@ This class has the following methods.
 - dump
 - plot_path
 - plot_dendrogram
+- plot_heatmap
 - get_features
 - get_features_neighbors
 - get_index
