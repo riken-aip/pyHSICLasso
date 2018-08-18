@@ -75,6 +75,8 @@ class HSICLasso(object):
 
         return True
 
+
+
     def _run_hsic_lasso(self, y_kernel, num_feat, B, M, discrete_x, max_neighbors):
         if self.X_in is None or self.Y_in is None:
             raise UnboundLocalError("Input your data")
@@ -92,18 +94,11 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
             numblocks = int(numblocks)
 
         perms = 1 + bool(numblocks - 1) * (M - 1)
-        self.X = []
-        
-        for p in range(perms):
-            self._permute_data(p)
-            for i in range(0, n - discarded, B):
-                j = min(n, i+B)
-                X, Xty = hsic_lasso(self.X_in[:,i:j], self.Y_in[:,i:j], y_kernel, x_kernel)
-                self.X.append(X)
-                self.Xty = self.Xty + Xty if i+p else Xty
-        
-        self.X = np.concatenate(self.X, axis = 0) * np.sqrt(1/(numblocks * perms))
-        self.Xty = self.Xty * 1/(numblocks * perms)
+
+        X, Xty = hsic_lasso(self.X_in, self.Y_in, y_kernel, x_kernel,discarded,B,perms)
+
+        self.X = X* np.sqrt(1/(numblocks * perms)) #np.concatenate(self.X, axis = 0) * np.sqrt(1/(numblocks * perms))
+        self.Xty = Xty * 1/(numblocks * perms)
         self.path, self.beta, self.A, self.lam, self.A_neighbors, \
             self.A_neighbors_score = nlars(
                 self.X, self.Xty, num_feat, self.max_neighbors)
