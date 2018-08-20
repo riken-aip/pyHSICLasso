@@ -188,7 +188,7 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
 
     def get_index_neighbors(self,feat_index=0,num_neighbors=5):
         if feat_index > len(self.A) -1:
-            raise ValueError("Index does not exist")
+            raise IndexError("Index does not exist")
 
         num_neighbors = min(num_neighbors,self.max_neighbors)
 
@@ -196,7 +196,7 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
 
     def get_index_neighbors_score(self, feat_index=0, num_neighbors=5):
         if feat_index > len(self.A) - 1:
-            raise ValueError("Index does not exist")
+            raise IndexError("Index does not exist")
 
         num_neighbors = min(num_neighbors, self.max_neighbors)
 

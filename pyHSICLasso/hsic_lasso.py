@@ -14,14 +14,14 @@ from .kernel_tools import kernel_delta_norm, kernel_gaussian
 
 standard_library.install_aliases()
 
-def compute_input_matrix(X_in,k,B,n,discarded,perms,x_kernel):
+def compute_input_matrix(X_in, feature_idx, B, n, discarded, perms, x_kernel):
 
     H = np.eye(B) - 1 / B * np.ones(B)
     X = np.zeros((n*B*perms,1))
 
     st = 0
     ed = B ** 2
-    index = list(range(0, n))
+    index = np.arange(n)
     for p in range(perms):
         np.random.seed(p)
         index = np.random.permutation(index)
@@ -50,10 +50,10 @@ def compute_input_matrix(X_in,k,B,n,discarded,perms,x_kernel):
             st += B ** 2
             ed += B ** 2
 
-    return [{'id': k, 'val': X.flatten()}]
+    return ( feature_idx, X.flatten() )
 
 
-def hsic_lasso(X_in, Y_in,y_kernel, x_kernel = 'Gauss', n_jobs=-1,discarded=0, B=0, perms=1):
+def hsic_lasso(X_in, Y_in, y_kernel, x_kernel = 'Gauss', n_jobs=-1, discarded=0, B=0, perms=1):
     """
     Input:
         X_in      input_data
@@ -71,7 +71,7 @@ def hsic_lasso(X_in, Y_in,y_kernel, x_kernel = 'Gauss', n_jobs=-1,discarded=0, B
     # Centering matrix
     H = np.eye(B) - 1 / B * np.ones(B)
     lf = np.zeros((n * B * perms, 1))
-    index = list(range(0,n))
+    index = np.arange(n)
     st = 0
     ed = B**2
     for p in range(perms):
@@ -83,7 +83,7 @@ def hsic_lasso(X_in, Y_in,y_kernel, x_kernel = 'Gauss', n_jobs=-1,discarded=0, B
 
             if y_kernel == "Delta":
                 if dy > 1:
-                    raise ValueError("Delta kernel only supports 1 dimensional class labels.")
+                    raise RuntimeError("Delta kernel only supports 1 dimensional class labels.")
 
                 L = kernel_delta_norm(Y_in[:,index[i:j]], Y_in[:,index[i:j]])
             elif y_kernel == "Gauss":
@@ -101,12 +101,9 @@ def hsic_lasso(X_in, Y_in,y_kernel, x_kernel = 'Gauss', n_jobs=-1,discarded=0, B
 
     # Preparing design matrix for HSIC Lars
     result = Parallel(n_jobs=n_jobs)([delayed(compute_input_matrix)(X_in[k,:],k,B,n,discarded,perms,x_kernel) for k in range(d)])
+    result = dict(result)
 
-    X = np.zeros((n * B * perms, d))
-    for tmp in result:
-        id = tmp[0]['id']
-        X[:,id] = tmp[0]['val']
-
-    X_ty = np.dot(X.T,lf)
+    X = np.array([ result[k] for k in range(d) ]).T
+    X_ty = np.dot(X.T, lf)
 
     return X, X_ty
