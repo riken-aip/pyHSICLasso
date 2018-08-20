@@ -27,11 +27,11 @@ class ClassificationTest(unittest.TestCase):
             self.hsic_lasso.classification()
 
         self.hsic_lasso.input("./tests/test_data/csv_data.csv")
-        self.hsic_lasso.classification(5, discrete_x = True)
+        self.hsic_lasso.classification(5, discrete_x = True, n_jobs = 1)
         self.assertEqual(self.hsic_lasso.A, [764, 1422, 512, 248, 1581])
 
         self.hsic_lasso.input("./tests/test_data/csv_data.csv")
-        self.hsic_lasso.classification(10, discrete_x = True)
+        self.hsic_lasso.classification(10, discrete_x = True, n_jobs = 1)
         self.assertEqual(self.hsic_lasso.A, [764, 1422, 512, 248, 1581, 
                                              1670, 1771, 896, 779, 266])
 

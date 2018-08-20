@@ -40,10 +40,10 @@ class HSICLasso(object):
         self.hclust_featnameindex = None
         self.max_neighbors = 10
 
-    def input(self, *args):
+    def input(self, *args,output_list=['class']):
         self._check_args(args)
         if isinstance(args[0], string_types):
-            self._input_data_file(args[0])
+            self._input_data_file(args[0],output_list)
         elif isinstance(args[0], list):
             self._input_data_list(args[0], args[1])
         elif isinstance(args[0], np.ndarray):
@@ -56,26 +56,30 @@ class HSICLasso(object):
         return True
 
 
-    def regression(self, num_feat=5, B=0, M=1, discrete_x=False, max_neighbors=10):
+    def regression(self, num_feat=5, B=0, M=1, discrete_x=False, max_neighbors=10, n_jobs=-1):
         self._run_hsic_lasso(num_feat=num_feat,
                              y_kernel="Gauss",
                              B=B, M=M,
                              discrete_x=discrete_x,
-                             max_neighbors=max_neighbors)
+                             max_neighbors=max_neighbors,
+                             n_jobs=n_jobs)
 
         return True
 
 
-    def classification(self, num_feat=5, B=0, M=1, discrete_x=False, max_neighbors=10):
+    def classification(self, num_feat=5, B=0, M=1, discrete_x=False, max_neighbors=10, n_jobs=-1):
         self._run_hsic_lasso(num_feat=num_feat,
                              y_kernel="Delta",
                              B=B, M=M,
                              discrete_x=discrete_x,
-                             max_neighbors=max_neighbors)
+                             max_neighbors=max_neighbors,
+                             n_jobs=n_jobs)
 
         return True
 
-    def _run_hsic_lasso(self, y_kernel, num_feat, B, M, discrete_x, max_neighbors):
+
+
+    def _run_hsic_lasso(self, y_kernel, num_feat, B, M, discrete_x, max_neighbors, n_jobs):
         if self.X_in is None or self.Y_in is None:
             raise UnboundLocalError("Input your data")
         self.max_neighbors = max_neighbors
@@ -91,19 +95,14 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
             warnings.warn(msg, RuntimeWarning)
             numblocks = int(numblocks)
 
+        #Number of permutations of the block HSIC
         perms = 1 + bool(numblocks - 1) * (M - 1)
-        self.X = []
-        
-        for p in range(perms):
-            self._permute_data(p)
-            for i in range(0, n - discarded, B):
-                j = min(n, i+B)
-                X, Xty = hsic_lasso(self.X_in[:,i:j], self.Y_in[:,i:j], y_kernel, x_kernel)
-                self.X.append(X)
-                self.Xty = self.Xty + Xty if i+p else Xty
-        
-        self.X = np.concatenate(self.X, axis = 0) * np.sqrt(1/(numblocks * perms))
-        self.Xty = self.Xty * 1/(numblocks * perms)
+
+        X, Xty = hsic_lasso(self.X_in, self.Y_in, y_kernel, x_kernel, n_jobs=n_jobs, discarded=discarded, B=B, perms=perms)
+
+        self.X = X* np.sqrt(1/(numblocks * perms)) #np.concatenate(self.X, axis = 0) * np.sqrt(1/(numblocks * perms))
+        self.Xty = Xty * 1/(numblocks * perms)
+
         self.path, self.beta, self.A, self.lam, self.A_neighbors, \
             self.A_neighbors_score = nlars(
                 self.X, self.Xty, num_feat, self.max_neighbors)
@@ -189,7 +188,7 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
 
     def get_index_neighbors(self,feat_index=0,num_neighbors=5):
         if feat_index > len(self.A) -1:
-            raise ValueError("Index does not exist")
+            raise IndexError("Index does not exist")
 
         num_neighbors = min(num_neighbors,self.max_neighbors)
 
@@ -197,7 +196,7 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
 
     def get_index_neighbors_score(self, feat_index=0, num_neighbors=5):
         if feat_index > len(self.A) - 1:
-            raise ValueError("Index does not exist")
+            raise IndexError("Index does not exist")
 
         num_neighbors = min(num_neighbors, self.max_neighbors)
 
@@ -315,12 +314,12 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
                 raise TypeError("Check arg type")
         return True
 
-    def _input_data_file(self, file_name):
+    def _input_data_file(self, file_name,output_list):
         ext = file_name[-4:]
         if ext == ".csv":
-            self.X_in, self.Y_in, self.featname = input_csv_file(file_name)
+            self.X_in, self.Y_in, self.featname = input_csv_file(file_name,output_list=output_list)
         elif ext == ".tsv":
-            self.X_in, self.Y_in, self.featname = input_tsv_file(file_name)
+            self.X_in, self.Y_in, self.featname = input_tsv_file(file_name,output_list=output_list)
         elif ext == ".mat":
             self.X_in, self.Y_in, self.featname = input_matlab_file(file_name)
         return True
@@ -342,10 +341,10 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
     def _check_shape(self):
         _, x_col_len = self.X_in.shape
         y_row_len, y_col_len = self.Y_in.shape
-        if y_row_len != 1:
-            raise ValueError("Check your input data")
+        #if y_row_len != 1:
+        #    raise ValueError("Check your input data")
         if x_col_len != y_col_len:
-            raise ValueError("Check your input data")
+            raise ValueError("The number of samples in input and output should be same")
         return True
 
     def _permute_data(self, seed = None):

@@ -27,11 +27,11 @@ class RegressionTest(unittest.TestCase):
             self.hsic_lasso.regression()
 
         self.hsic_lasso.input("./tests/test_data/matlab_data.mat")
-        self.hsic_lasso.regression(5)
+        self.hsic_lasso.regression(5, n_jobs = 1)
         self.assertEqual(self.hsic_lasso.A, [1099, 99, 199, 1299, 299])
 
         self.hsic_lasso.input("./tests/test_data/matlab_data.mat")
-        self.hsic_lasso.regression(10)
+        self.hsic_lasso.regression(10, n_jobs = 1)
         self.assertEqual(self.hsic_lasso.A, [1099, 99, 199, 1299, 1477,
                                              1405, 1073, 299, 1596, 358])
 

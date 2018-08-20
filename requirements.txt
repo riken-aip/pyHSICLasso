@@ -6,3 +6,4 @@ pytest
 scipy
 six
 seaborn
+joblib
