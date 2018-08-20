@@ -14,6 +14,7 @@ from .kernel_tools import kernel_delta_norm, kernel_gaussian
 
 standard_library.install_aliases()
 
+
 def compute_input_matrix(X_in, feature_idx, B, n, discarded, perms, x_kernel):
 
     H = np.eye(B) - 1 / B * np.ones(B)
@@ -26,14 +27,15 @@ def compute_input_matrix(X_in, feature_idx, B, n, discarded, perms, x_kernel):
         np.random.seed(p)
         index = np.random.permutation(index)
 
+        X_in_perm = X_in[index]
         for i in range(0, n - discarded, B):
             j = min(n, i + B)
 
             # Normalization
             if x_kernel == 'Gauss':
-                XX = X_in[index[i:j]] / (X_in[index[i:j]].std() + 10e-20) * np.sqrt(float(B - 1) / B)
+                XX = X_in_perm[i:j] / (X_in_perm[i:j].std() + 10e-20) * np.sqrt(float(B - 1) / B)
             else:
-                XX = X_in[index[i:j]]
+                XX = X_in_perm[i:j]
 
             XX = XX.reshape((1, B))
 
@@ -78,6 +80,7 @@ def hsic_lasso(X_in, Y_in, y_kernel, x_kernel = 'Gauss', n_jobs=-1, discarded=0,
         np.random.seed(p)
         index = np.random.permutation(index)
 
+        Y_in_perm = Y_in[:,index]
         for i in range(0, n - discarded, B):
             j = min(n, i + B)
 
@@ -85,9 +88,9 @@ def hsic_lasso(X_in, Y_in, y_kernel, x_kernel = 'Gauss', n_jobs=-1, discarded=0,
                 if dy > 1:
                     raise RuntimeError("Delta kernel only supports 1 dimensional class labels.")
 
-                L = kernel_delta_norm(Y_in[:,index[i:j]], Y_in[:,index[i:j]])
+                L = kernel_delta_norm(Y_in_perm[:,i:j], Y_in_perm[:,i:j])
             elif y_kernel == "Gauss":
-                YY = Y_in[:,index[i:j]] / (Y_in[:,index[i:j]].std(1)[:, None] + 10e-20) * np.sqrt(float(B - 1) / B)
+                YY = Y_in_perm[:,i:j] / (Y_in_perm[:,i:j].std(1)[:, None] + 10e-20) * np.sqrt(float(B - 1) / B)
                 L = kernel_gaussian(YY, YY, np.sqrt(dy))
 
             L = np.dot(H, np.dot(L, H))
