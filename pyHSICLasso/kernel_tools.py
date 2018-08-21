@@ -4,14 +4,14 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
-import numpy as np
 from future import standard_library
+
+import numpy as np
 
 standard_library.install_aliases()
 
 
 def kernel_delta_norm(X_in_1, X_in_2):
-
     n_1 = X_in_1.shape[1]
     n_2 = X_in_2.shape[1]
     K = np.zeros((n_1, n_2))
@@ -28,7 +28,6 @@ def kernel_delta_norm(X_in_1, X_in_2):
 
 
 def kernel_delta(X_in_1, X_in_2):
-    
     n_1 = X_in_1.shape[1]
     n_2 = X_in_2.shape[1]
     K = np.zeros((n_1, n_2))
