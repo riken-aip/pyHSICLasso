@@ -1,4 +1,4 @@
-#!usr/bin/env python
+#!/usr/bin/env python
 # coding: utf-8
 
 from __future__ import (absolute_import, division, print_function,
@@ -6,9 +6,10 @@ from __future__ import (absolute_import, division, print_function,
 
 from builtins import range
 
-from scipy.sparse import lil_matrix
-import numpy as np
 from future import standard_library
+
+import numpy as np
+from scipy.sparse import lil_matrix
 
 standard_library.install_aliases()
 
@@ -102,25 +103,26 @@ def nlars(X, X_ty, num_feat, max_neighbors):
             A.append(I[j])
             I.remove(I[j])
 
-    #We run numfeat + 1 iteration to update beta and path information
-    #Then, we return only numfeat features
+    # We run numfeat + 1 iteration to update beta and path information
+    # Then, we return only numfeat features
     if len(A) > num_feat:
         A.pop()
 
-    #Sort A with respect to beta
+    # Sort A with respect to beta
     s = beta[A]
     sort_index = sorted(range(len(s)), key=lambda k: s[k], reverse=True)
 
     A_sorted = [A[i] for i in sort_index]
 
-    #Find nighbors of selected features
+    # Find nighbors of selected features
     XtXA = np.dot(X.transpose(), X[:, A_sorted])
 
-    #Search up to 10 nighbors
+    # Search up to 10 nighbors
     num_neighbors = max_neighbors + 1
-    for i in range(0,len(A_sorted)):
-        tmp = XtXA[:,i]
-        sort_index = sorted(range(len(tmp)), key=lambda k: tmp[k], reverse=True)
+    for i in range(0, len(A_sorted)):
+        tmp = XtXA[:, i]
+        sort_index = sorted(
+            range(len(tmp)), key=lambda k: tmp[k], reverse=True)
         A_neighbors.append(sort_index[0:num_neighbors])
         A_neighbors_score.append(tmp[sort_index[0:num_neighbors]])
 
