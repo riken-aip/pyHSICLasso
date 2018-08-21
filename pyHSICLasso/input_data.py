@@ -1,20 +1,26 @@
-#!usr/bin/env python
+#!/usr/bin/env python
 # coding: utf-8
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
-import pandas as pd
+from builtins import range
+
 from future import standard_library
+
+import pandas as pd
 from scipy import io as spio
 
 standard_library.install_aliases()
 
-def input_csv_file(file_name,output_list=['class']):
+
+def input_csv_file(file_name, output_list=['class']):
     return input_txt_file(file_name, output_list, ',')
 
-def input_tsv_file(file_name,output_list=['class']):
+
+def input_tsv_file(file_name, output_list=['class']):
     return input_txt_file(file_name, output_list, '\t')
+
 
 def input_txt_file(file_name, output_list, sep):
     df = pd.read_csv(file_name, sep=sep)
@@ -44,10 +50,9 @@ def input_txt_file(file_name, output_list, sep):
 
     return X_in, Y_in, featname
 
+
 def input_matlab_file(file_name):
     data = spio.loadmat(file_name)
-
-
 
     if "X" in data.keys() and "Y" in data.keys():
         X_in = data["X"]
@@ -64,8 +69,8 @@ def input_matlab_file(file_name):
     else:
         raise KeyError("not find input data")
 
-    #Create feature list
+    # Create feature list
     d = X_in.shape[0]
-    featname = [('%d' % i) for i in range(1,d+1)]
+    featname = [('%d' % i) for i in range(1, d + 1)]
 
     return X_in, Y_in, featname

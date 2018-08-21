@@ -1,13 +1,24 @@
 pyHSICLasso
 ===========
 
-`Build Status <https://travis-ci.org/riken-aip/pyHSICLasso>`__
+`pypi <https://pypi.python.org/pypi/pyHSICLasso>`__ `MIT
+License <LICENSE>`__ `Build
+Status <https://travis-ci.org/riken-aip/pyHSICLasso>`__
 
-pyHSICLasso is a supervised feature selection considering the dependency
-of nonlinear input and output.
+pyHSICLasso is a package of the Hilbert Schmidt Independence Criterion
+Lasso (HSIC Lasso), which is a nonlinear feature selection method
+considering the nonlinear input and output relationship.
 
-What can you do with this?
---------------------------
+Advantage of HSIC Lasso
+-----------------------
+
+-  Can find nonlinearly related features efficiently.
+-  Can obtain a globally optimal solution.
+-  Can deal with both regression and classification problems through
+   kernels.
+
+Feature Selection
+-----------------
 
 The goal of supervised feature selection is to find a subset of input
 features that are responsible for predicting output values. By using
@@ -48,9 +59,11 @@ This class has the following methods.
 -  dump
 -  plot_path
 -  plot_dendrogram
+-  plot_heatmap
 -  get_features
 -  get_features_neighbors
 -  get_index
+-  get_index_score
 -  get_index_neighbors
 -  get_index_neighbors_score
 
@@ -62,10 +75,15 @@ The input format corresponds to the following formats.
 -  python’s list
 -  numpy’s ndarray
 
-When using .mat, .csv, .tsv, it is better to use pandas dataframe. The
-rows of the dataframe are sample number. The first column is
-classification value. The remaining columns are values of each features.
-The following is a sample data (csv format).
+Input file
+----------
+
+When using .mat, .csv, .tsv, we support pandas dataframe. The rows of
+the dataframe are sample number. The output variable should have
+``class`` tag. If you wish to use your own tag, you need to specify the
+output variables by list (``output_list=['tag']``) The remaining columns
+are values of each features. The following is a sample data (csv
+format).
 
 ::
 
@@ -77,6 +95,9 @@ The following is a sample data (csv format).
 When using python’s list or numpy’s ndarray, Let each index be sample
 number, let values of each features for X[ind] and classification value
 for Y[ind].
+
+Example
+-------
 
 .. code:: py
 
@@ -112,27 +133,29 @@ details of the analysis result, output of the feature index.
 
    >>> hsic_lasso.dump()
    ============================================== HSICLasso : Result ==================================================
-   | Order | Feature     | Score | Top-5 Related Feature (Relatedness Score)                                          |
-   | 1     | v1423       | 1.000 | v493    (0.413), v1674   (0.384), v245    (0.384), v267    (0.384), v415    (0.346)|
-   | 2     | v513        | 0.765 | v365    (0.563), v1648   (0.487), v1139   (0.456), v1912   (0.450), v241    (0.446)|
-   | 3     | v249        | 0.679 | v267    (0.544), v245    (0.544), v822    (0.381), v824    (0.374), v1897   (0.343)|
-   | 4     | v1671       | 0.639 | v513    (0.231), v1263   (0.217), v1771   (0.202), v1912   (0.197), v187    (0.179)|
-   | 5     | v780        | 0.116 | v513    (0.439), v26     (0.439), v571    (0.410), v127    (0.369), v91     (0.361)|
-
+   | Order | Feature      | Score | Top-5 Related Feature (Relatedness Score)                                          |
+   | 1     | 1100         | 1.000 | 100          (0.979), 385          (0.104), 1762         (0.098), 762          (0.098), 1385         (0.097)|
+   | 2     | 100          | 0.537 | 1100         (0.979), 385          (0.100), 1762         (0.095), 762          (0.094), 1385         (0.092)|
+   | 3     | 200          | 0.336 | 1200         (0.979), 264          (0.094), 1482         (0.094), 1264         (0.093), 482          (0.091)|
+   | 4     | 1300         | 0.140 | 300          (0.984), 1041         (0.107), 1450         (0.104), 1869         (0.102), 41           (0.101)|
+   | 5     | 300          | 0.033 | 1300         (0.984), 1041         (0.110), 41           (0.106), 1450         (0.100), 1869         (0.099)|
    >>> hsic_lasso.get_index()
-   [1422, 512, 248, 1670, 779]
+   [1099, 99, 199, 1299, 299]
+
+   >>> hsic_lasso.get_index_score()
+   array([0.09723658, 0.05218047, 0.03264885, 0.01360242, 0.00319763])
 
    >>> hsic_lasso.get_features()
-   ['v1423', 'v513', 'v249', 'v1671', 'v780']
+   ['1100', '100', '200', '1300', '300']
 
    >>> hsic_lasso.get_index_neighbors(feat_index=0,num_neighbors=5)
-   [492, 1673, 244, 266, 414]
+   [99, 384, 1761, 761, 1384]
 
    >>> hsic_lasso.get_features_neighbors(feat_index=0,num_neighbors=5)
-   ['v493', 'v1674', 'v245', 'v267', 'v415']
+   ['100', '385', '1762', '762', '1385']
 
    >>> hsic_lasso.get_index_neighbors_score(feat_index=0,num_neighbors=5)
-   [ 0.412915 ,  0.38446  ,  0.38446  ,  0.38446  ,  0.3462652]
+   array([0.9789888 , 0.10350618, 0.09757666, 0.09751763, 0.09678892])
 
 
 .. figure:: https://www.fastpic.jp/images.php?file=6530104232.png
@@ -143,10 +166,10 @@ details of the analysis result, output of the feature index.
 Contributors
 ------------
 
-Auther
-~~~~~~
+Developers
+~~~~~~~~~~
 
-Name : Makoto Yamada
+Name : Makoto Yamada, Héctor Climente-González
 
 E-mail : makoto.yamada@riken.jp
 

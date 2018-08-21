@@ -1,22 +1,23 @@
-#!usr/bin/env python
+#!/usr/bin/env python
 # coding: utf-8
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
-from builtins import range
+import warnings
+from builtins import int, open, range, str
+
+from future import standard_library
 
 import numpy as np
 import scipy.spatial.distance as distance
-from scipy.cluster.hierarchy import  linkage
-from future import standard_library
+from scipy.cluster.hierarchy import linkage
 from six import string_types
-import warnings
 
 from .hsic_lasso import hsic_lasso
 from .input_data import input_csv_file, input_matlab_file, input_tsv_file
 from .nlars import nlars
-from .plot_figure import plot_path, plot_dendrogram, plot_heatmap
+from .plot_figure import plot_dendrogram, plot_heatmap, plot_path
 
 standard_library.install_aliases()
 
@@ -40,10 +41,12 @@ class HSICLasso(object):
         self.hclust_featnameindex = None
         self.max_neighbors = 10
 
-    def input(self, *args,output_list=['class']):
+    def input(self, *args, **_3to2kwargs):
+        if 'output_list' in _3to2kwargs: output_list = _3to2kwargs['output_list']; del _3to2kwargs['output_list']
+        else: output_list = ['class']
         self._check_args(args)
         if isinstance(args[0], string_types):
-            self._input_data_file(args[0],output_list)
+            self._input_data_file(args[0], output_list)
         elif isinstance(args[0], list):
             self._input_data_list(args[0], args[1])
         elif isinstance(args[0], np.ndarray):
@@ -55,7 +58,6 @@ class HSICLasso(object):
         self._check_shape()
         return True
 
-
     def regression(self, num_feat=5, B=0, M=1, discrete_x=False, max_neighbors=10, n_jobs=-1):
         self._run_hsic_lasso(num_feat=num_feat,
                              y_kernel="Gauss",
@@ -66,7 +68,6 @@ class HSICLasso(object):
 
         return True
 
-
     def classification(self, num_feat=5, B=0, M=1, discrete_x=False, max_neighbors=10, n_jobs=-1):
         self._run_hsic_lasso(num_feat=num_feat,
                              y_kernel="Delta",
@@ -76,8 +77,6 @@ class HSICLasso(object):
                              n_jobs=n_jobs)
 
         return True
-
-
 
     def _run_hsic_lasso(self, y_kernel, num_feat, B, M, discrete_x, max_neighbors, n_jobs):
         if self.X_in is None or self.Y_in is None:
@@ -95,13 +94,15 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
             warnings.warn(msg, RuntimeWarning)
             numblocks = int(numblocks)
 
-        #Number of permutations of the block HSIC
+        # Number of permutations of the block HSIC
         perms = 1 + bool(numblocks - 1) * (M - 1)
 
-        X, Xty = hsic_lasso(self.X_in, self.Y_in, y_kernel, x_kernel, n_jobs=n_jobs, discarded=discarded, B=B, perms=perms)
+        X, Xty = hsic_lasso(self.X_in, self.Y_in, y_kernel, x_kernel,
+                            n_jobs=n_jobs, discarded=discarded, B=B, perms=perms)
 
-        self.X = X* np.sqrt(1/(numblocks * perms)) #np.concatenate(self.X, axis = 0) * np.sqrt(1/(numblocks * perms))
-        self.Xty = Xty * 1/(numblocks * perms)
+        # np.concatenate(self.X, axis = 0) * np.sqrt(1/(numblocks * perms))
+        self.X = X * np.sqrt(1 / (numblocks * perms))
+        self.Xty = Xty * 1 / (numblocks * perms)
 
         self.path, self.beta, self.A, self.lam, self.A_neighbors, \
             self.A_neighbors_score = nlars(
@@ -138,23 +139,29 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
         print("| Order | Feature      | Score | Top-5 Related Feature (Relatedness Score)                                          |")
         for i in range(len(self.A)):
             print("| {:<5} | {:<12} | {:.3f} | {:<12} ({:.3f}), {:<12} ({:.3f}),"
-                  " {:<12} ({:.3f}), {:<12} ({:.3f}), {:<12} ({:.3f})|".format(i+1,self.featname[self.A[i]],
-                                                                            self.beta[self.A[i]][0]/maxval,
-                                                                            self.featname[self.A_neighbors[i][1]],self.A_neighbors_score[i][1],
-                                                                            self.featname[self.A_neighbors[i][2]],self.A_neighbors_score[i][2],
-                                                                            self.featname[self.A_neighbors[i][3]],self.A_neighbors_score[i][3],
-                                                                            self.featname[self.A_neighbors[i][4]],self.A_neighbors_score[i][4],
-                                                                            self.featname[self.A_neighbors[i][5]],self.A_neighbors_score[i][5]))
+                  " {:<12} ({:.3f}), {:<12} ({:.3f}), {:<12} ({:.3f})|".format(i + 1, self.featname[self.A[i]],
+                                                                               self.beta[self.A[i]
+                                                                                         ][0] / maxval,
+                                                                               self.featname[self.A_neighbors[i][1]
+                                                                                             ], self.A_neighbors_score[i][1],
+                                                                               self.featname[self.A_neighbors[i][2]
+                                                                                             ], self.A_neighbors_score[i][2],
+                                                                               self.featname[self.A_neighbors[i][3]
+                                                                                             ], self.A_neighbors_score[i][3],
+                                                                               self.featname[self.A_neighbors[i][4]
+                                                                                             ], self.A_neighbors_score[i][4],
+                                                                               self.featname[self.A_neighbors[i][5]], self.A_neighbors_score[i][5]))
 
         #print("===== HSICLasso : Path ======")
-        #for i in range(len(self.A)):
+        # for i in range(len(self.A)):
         #    print(self.path[self.A[i], 1:])
-        #return True
+        # return True
 
     def plot_heatmap(self):
         if self.linkage_dist is None or self.hclust_featname is None or self.hclust_featnameindex is None:
             raise UnboundLocalError("Input your data")
-        plot_heatmap(self.X_in[self.hclust_featnameindex,:],self.linkage_dist, self.hclust_featname)
+        plot_heatmap(self.X_in[self.hclust_featnameindex, :],
+                     self.linkage_dist, self.hclust_featname)
         return True
 
     def plot_dendrogram(self):
@@ -162,7 +169,6 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
             raise UnboundLocalError("Input your data")
         plot_dendrogram(self.linkage_dist, self.hclust_featname)
         return True
-
 
     def plot_path(self):
         if self.path is None or self.beta is None or self.A is None:
@@ -175,8 +181,9 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
 
         return [self.featname[i] for i in index]
 
-    def get_features_neighbors(self,feat_index=0, num_neighbors=5):
-        index = self.get_index_neighbors(feat_index=feat_index, num_neighbors=num_neighbors)
+    def get_features_neighbors(self, feat_index=0, num_neighbors=5):
+        index = self.get_index_neighbors(
+            feat_index=feat_index, num_neighbors=num_neighbors)
 
         return [self.featname[i] for i in index]
 
@@ -184,15 +191,15 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
         return self.A
 
     def get_index_score(self):
-        return self.beta[self.A,-1]
+        return self.beta[self.A, -1]
 
-    def get_index_neighbors(self,feat_index=0,num_neighbors=5):
-        if feat_index > len(self.A) -1:
+    def get_index_neighbors(self, feat_index=0, num_neighbors=5):
+        if feat_index > len(self.A) - 1:
             raise IndexError("Index does not exist")
 
-        num_neighbors = min(num_neighbors,self.max_neighbors)
+        num_neighbors = min(num_neighbors, self.max_neighbors)
 
-        return self.A_neighbors[feat_index][1:(num_neighbors+1)]
+        return self.A_neighbors[feat_index][1:(num_neighbors + 1)]
 
     def get_index_neighbors_score(self, feat_index=0, num_neighbors=5):
         if feat_index > len(self.A) - 1:
@@ -202,7 +209,7 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
 
         return self.A_neighbors_score[feat_index][1:(num_neighbors + 1)]
 
-    def save_HSICmatrix(self,filename='HSICmatrix.csv'):
+    def save_HSICmatrix(self, filename='HSICmatrix.csv'):
         if self.X_in is None or self.Y_in is None:
             raise UnboundLocalError("Input your data")
 
@@ -210,15 +217,15 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
 
         K = np.dot(self.X.transpose(), self.X)
 
-        np.savetxt(filename,K,delimiter=',', fmt='%.7f')
+        np.savetxt(filename, K, delimiter=',', fmt='%.7f')
 
         return True
 
-    def save_score(self,filename='aggregated_score.csv'):
-        maxval =  self.beta[self.A[0]][0]
+    def save_score(self, filename='aggregated_score.csv'):
+        maxval = self.beta[self.A[0]][0]
 
         #print(maxval + ' ' + maxval_)
-        fout = open(filename,'w')
+        fout = open(filename, 'w')
         featscore = {}
         featcorrcoeff = {}
         for i in range(len(self.A)):
@@ -227,7 +234,7 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
             if self.featname[self.A[i]] not in featscore:
                 featscore[self.featname[self.A[i]]] = HSIC_XY
 
-                corrcoeff = np.corrcoef(self.X_in[self.A[i]],self.Y_in)[0][1]
+                corrcoeff = np.corrcoef(self.X_in[self.A[i]], self.Y_in)[0][1]
 
                 featcorrcoeff[self.featname[self.A[i]]] = corrcoeff
 
@@ -237,25 +244,31 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
             for j in range(1, self.max_neighbors + 1):
                 HSIC_XX = self.A_neighbors_score[i][j]
                 if self.featname[self.A_neighbors[i][j]] not in featscore:
-                    featscore[self.featname[self.A_neighbors[i][j]]] = HSIC_XY * HSIC_XX
+                    featscore[self.featname[self.A_neighbors[i][j]]
+                              ] = HSIC_XY * HSIC_XX
 
-                    corrcoeff = np.corrcoef(self.X_in[self.A_neighbors[i][j]], self.Y_in)[0][1]
+                    corrcoeff = np.corrcoef(
+                        self.X_in[self.A_neighbors[i][j]], self.Y_in)[0][1]
 
-                    featcorrcoeff[self.featname[self.A_neighbors[i][j]]] = corrcoeff
+                    featcorrcoeff[self.featname[self.A_neighbors[i]
+                                                [j]]] = corrcoeff
                 else:
-                    featscore[self.featname[self.A_neighbors[i][j]]] += HSIC_XY * HSIC_XX
+                    featscore[self.featname[self.A_neighbors[i][j]]
+                              ] += HSIC_XY * HSIC_XX
 
         # Sorting decending order
-        featscore_sorted = sorted(featscore.items(), key=lambda x: x[1], reverse=True)
+        featscore_sorted = sorted(
+            featscore.items(), key=lambda x: x[1], reverse=True)
 
         # Add Pearson correlation for comparison
         fout.write('Feature,Score,Pearson Corr\n')
         for (key, val) in featscore_sorted:
-            fout.write(key + ',' + str(val) + ',' + str(featcorrcoeff[key]) + '\n')
+            fout.write(key + ',' + str(val) + ',' +
+                       str(featcorrcoeff[key]) + '\n')
 
         fout.close()
 
-    def save_param(self,filename='param.csv'):
+    def save_param(self, filename='param.csv'):
         # Save parameters
         maxval = self.beta[self.A[0]][0]
 
@@ -314,12 +327,14 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
                 raise TypeError("Check arg type")
         return True
 
-    def _input_data_file(self, file_name,output_list):
+    def _input_data_file(self, file_name, output_list):
         ext = file_name[-4:]
         if ext == ".csv":
-            self.X_in, self.Y_in, self.featname = input_csv_file(file_name,output_list=output_list)
+            self.X_in, self.Y_in, self.featname = input_csv_file(
+                file_name, output_list=output_list)
         elif ext == ".tsv":
-            self.X_in, self.Y_in, self.featname = input_tsv_file(file_name,output_list=output_list)
+            self.X_in, self.Y_in, self.featname = input_tsv_file(
+                file_name, output_list=output_list)
         elif ext == ".mat":
             self.X_in, self.Y_in, self.featname = input_matlab_file(file_name)
         return True
@@ -341,16 +356,17 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
     def _check_shape(self):
         _, x_col_len = self.X_in.shape
         y_row_len, y_col_len = self.Y_in.shape
-        #if y_row_len != 1:
+        # if y_row_len != 1:
         #    raise ValueError("Check your input data")
         if x_col_len != y_col_len:
-            raise ValueError("The number of samples in input and output should be same")
+            raise ValueError(
+                "The number of samples in input and output should be same")
         return True
 
-    def _permute_data(self, seed = None):
+    def _permute_data(self, seed=None):
         np.random.seed(seed)
         n = self.X_in.shape[1]
 
         perm = np.random.permutation(n)
-        self.X_in = self.X_in[:,perm]
-        self.Y_in = self.Y_in[:,perm]
+        self.X_in = self.X_in[:, perm]
+        self.Y_in = self.Y_in[:, perm]
