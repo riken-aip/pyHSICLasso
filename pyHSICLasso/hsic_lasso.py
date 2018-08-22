@@ -75,9 +75,9 @@ def hsic_lasso(X_in, Y_in, y_kernel, x_kernel='Gauss', n_jobs=-1, discarded=0, B
 
     # Normalize data
     if x_kernel == 'Gauss':
-        X_in = X_in / (X_in.std(0) + 10e-20) * np.sqrt(float(B - 1) / B)
+        X_in = X_in / (X_in.std(1)[:, None] + 10e-20)
     if y_kernel == "Gauss":
-        Y_in = Y_in / (Y_in.std(1)[:, None] + 10e-20) * np.sqrt(float(B - 1) / B)
+        Y_in = Y_in / (Y_in.std(1)[:, None] + 10e-20)
 
     # Compute y kernel matrix
     for p in range(perms):
