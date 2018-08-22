@@ -32,13 +32,7 @@ def compute_input_matrix(X_in, feature_idx, B, n, discarded, perms, x_kernel):
             j = min(n, i + B)
 
             # Normalization
-            if x_kernel == 'Gauss':
-                XX = X_in[index[i:j]] / \
-                    (X_in[index[i:j]].std() + 10e-20) * \
-                    np.sqrt(float(B - 1) / B)
-            else:
-                XX = X_in[index[i:j]]
-
+            XX = X_in[index[i:j]]
             XX = XX.reshape((1, B))
 
             if x_kernel == 'Gauss':
@@ -78,6 +72,14 @@ def hsic_lasso(X_in, Y_in, y_kernel, x_kernel='Gauss', n_jobs=-1, discarded=0, B
     index = np.arange(n)
     st = 0
     ed = B**2
+
+    # Normalize data
+    if x_kernel == 'Gauss':
+        X_in = X_in / (X_in.std(0) + 10e-20) * np.sqrt(float(B - 1) / B)
+    if y_kernel == "Gauss":
+        Y_in = Y_in / (Y_in.std(1)[:, None] + 10e-20) * np.sqrt(float(B - 1) / B)
+
+    # Compute y kernel matrix
     for p in range(perms):
         np.random.seed(p)
         index = np.random.permutation(index)
@@ -92,8 +94,7 @@ def hsic_lasso(X_in, Y_in, y_kernel, x_kernel='Gauss', n_jobs=-1, discarded=0, B
 
                 L = kernel_delta_norm(Y_in[:, index[i:j]], Y_in[:, index[i:j]])
             elif y_kernel == "Gauss":
-                YY = Y_in[:, index[i:j]] / (Y_in[:, index[i:j]].std(1)
-                                            [:, None] + 10e-20) * np.sqrt(float(B - 1) / B)
+                YY = Y_in[:, index[i:j]]
                 L = kernel_gaussian(YY, YY, np.sqrt(dy))
 
             L = np.dot(H, np.dot(L, H))
