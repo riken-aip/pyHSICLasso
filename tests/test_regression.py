@@ -13,7 +13,7 @@ import warnings
 from pyHSICLasso import HSICLasso
 
 standard_library.install_aliases()
-
+warnings.simplefilter('always')
 
 class RegressionTest(unittest.TestCase):
     def setUp(self):

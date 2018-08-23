@@ -41,12 +41,12 @@ def input_txt_file(file_name, output_list, sep):
     for output_name in output_list:
         featname.remove(output_name)
 
-    X_in = df.ix[:, input_index].values.T
+    X_in = df.iloc[:, input_index].values.T
 
     if len(output_index) == 1:
-        Y_in = df.ix[:, output_index].values.reshape(1, len(df.index))
+        Y_in = df.iloc[:, output_index].values.reshape(1, len(df.index))
     else:
-        Y_in = df.ix[:, output_index].values.T
+        Y_in = df.iloc[:, output_index].values.T
 
     return X_in, Y_in, featname
 
