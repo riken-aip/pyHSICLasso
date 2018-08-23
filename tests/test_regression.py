@@ -33,19 +33,19 @@ class RegressionTest(unittest.TestCase):
         self.hsic_lasso.input("./tests/test_data/matlab_data.mat")
         self.hsic_lasso.regression(10, n_jobs = 1)
         self.assertEqual(self.hsic_lasso.A, [1099, 99, 199, 1299, 1477,
-                                             1405, 1073, 299, 1596, 358])
+                                             1405, 1073, 299,1596, 358])
 
         # Blocks
         self.hsic_lasso.input("./tests/test_data/matlab_data.mat")
         B = int(self.hsic_lasso.X_in.shape[1]/2)
         self.hsic_lasso.regression(5, B, 10)
-        self.assertEqual(self.hsic_lasso.A, [1099, 99, 199, 299, 1477])
+        self.assertEqual(self.hsic_lasso.A, [1099, 99, 199, 299, 1299])
 
         self.hsic_lasso.input("./tests/test_data/matlab_data.mat")
         B = int(self.hsic_lasso.X_in.shape[1]/2)
         self.hsic_lasso.regression(10, B, 10)
-        self.assertEqual(self.hsic_lasso.A, [1099, 99, 199, 1477, 299, 
-                                             1405, 1073, 1299, 1596, 358])
+        self.assertEqual(self.hsic_lasso.A, [1099, 99, 199, 1477, 299,
+                                             1299, 1073, 1405, 358, 1596])
 
         # use non-divisor as block size
         with warnings.catch_warnings(record=True) as w:
@@ -56,8 +56,8 @@ class RegressionTest(unittest.TestCase):
             numblocks = n / B
             
             self.hsic_lasso.regression(10, B, 10)
-            self.assertEqual(self.hsic_lasso.A, [1422, 248, 512, 1581, 1670, 
-                                                 764, 896, 1771, 779, 398])
+            self.assertEqual(self.hsic_lasso.A, [1422, 248, 512, 1581, 1670,
+                                                 764, 1771, 896, 779, 398])
             self.assertEqual(len(w), 1)
             self.assertEqual(w[-1].category, RuntimeWarning)
             self.assertEqual(str(w[-1].message), "B {} must be an exact divisor of the \
