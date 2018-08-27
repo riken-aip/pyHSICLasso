@@ -23,7 +23,7 @@ microarray_cmap = LinearSegmentedColormap('microarray', {
 standard_library.install_aliases()
 
 
-def plot_heatmap(X, row_linkage, featname):
+def plot_heatmap(X, row_linkage, featname, filepath):
     df = pd.DataFrame(X)
     df.index = featname
     cg = sns.clustermap(df, center=0, row_linkage=row_linkage,
@@ -32,16 +32,18 @@ def plot_heatmap(X, row_linkage, featname):
     plt.setp(cg.ax_heatmap.yaxis.get_majorticklabels(), rotation=0)
     plt.setp(cg.ax_heatmap.xaxis.get_majorticklabels(), rotation=90)
     plt.title('Heatmap')
-    plt.show()
+    plt.savefig(filepath)
+    plt.clf()
 
 
-def plot_dendrogram(linkage, featname):
+def plot_dendrogram(linkage, featname, filepath):
     dendrogram(linkage, labels=featname)
     plt.title("Dendrogram")
-    plt.show()
+    plt.savefig(filepath)
+    plt.clf()
 
 
-def plot_path(path, beta, A):
+def plot_path(path, beta, A, filepath):
     t = path.sum(0)
     plt.title("HSICLasso Result")
     plt.xlabel("lambda")
@@ -49,4 +51,5 @@ def plot_path(path, beta, A):
     for ind in range(len(A)):
         plt.plot(t, path[A[ind], :], label="{}".format(A[ind] + 1))
     plt.legend()
-    plt.show()
+    plt.savefig(filepath)
+    plt.clf()

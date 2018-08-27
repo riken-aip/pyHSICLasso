@@ -157,23 +157,24 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
         #    print(self.path[self.A[i], 1:])
         # return True
 
-    def plot_heatmap(self):
+    def plot_heatmap(self, filepath = 'heatmap.png'):
         if self.linkage_dist is None or self.hclust_featname is None or self.hclust_featnameindex is None:
             raise UnboundLocalError("Input your data")
         plot_heatmap(self.X_in[self.hclust_featnameindex, :],
-                     self.linkage_dist, self.hclust_featname)
+                     self.linkage_dist, self.hclust_featname,
+                     filepath)
         return True
 
-    def plot_dendrogram(self):
+    def plot_dendrogram(self, filepath = 'dendrogram.png'):
         if self.linkage_dist is None or self.hclust_featname is None:
             raise UnboundLocalError("Input your data")
-        plot_dendrogram(self.linkage_dist, self.hclust_featname)
+        plot_dendrogram(self.linkage_dist, self.hclust_featname, filepath)
         return True
 
-    def plot_path(self):
+    def plot_path(self, filepath = 'path.png'):
         if self.path is None or self.beta is None or self.A is None:
             raise UnboundLocalError("Input your data")
-        plot_path(self.path, self.beta, self.A)
+        plot_path(self.path, self.beta, self.A, filepath)
         return True
 
     def get_features(self):
