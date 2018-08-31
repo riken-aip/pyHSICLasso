@@ -34,7 +34,7 @@ def _packages():
 
 setup(
     name="pyHSICLasso",
-    version="1.3.2",
+    version="1.3.3",
     author="Makoto Yamada",
     author_email="makoto.yamada@riken.jp",
     url="http://www.makotoyamada-ml.com/hsiclasso.html",
