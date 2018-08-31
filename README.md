@@ -3,11 +3,12 @@
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 [![Build Status](https://travis-ci.org/riken-aip/pyHSICLasso.svg?branch=master)](https://travis-ci.org/riken-aip/pyHSICLasso)
 
-pyHSICLasso is a package of the Hilbert Schmidt Independence Criterion Lasso (HSIC Lasso), which is a nonlinear feature selection method considering the nonlinear input and output relationship.
+pyHSICLasso is a package of the Hilbert Schmidt Independence Criterion Lasso (HSIC Lasso), which is a nonlinear feature selection method considering the nonlinear input and output relationship. HSIC Lasso can be regarded as a convex variant of widely used minimum redundancy maximum relevance (mRMR) feature selection algorithm. 
 
 ## Advantage of HSIC Lasso
 
 - Can find nonlinearly related features efficiently.
+- Can find non-redundant features.
 - Can obtain a globally optimal solution.
 - Can deal with both regression and classification problems through kernels. 
 
