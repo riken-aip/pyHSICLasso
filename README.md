@@ -70,7 +70,7 @@ class,v1,v2,v3,v4,v5,v6,v7,v8,v9,v10
 
 When using python's list or numpy's ndarray, Let each index be sample number, let values of each features for X[ind] and classification value for Y[ind].
 
-For multi-variate output cases, you can specify the output by using lit (`output_list`). See [Sample code](https://github.com/riken-aip/pyHSICLasso/blob/master/example/sample_multi_variate_output.py) for details.
+For multi-variate output cases, you can specify the output by using the list (`output_list`). See [Sample code](https://github.com/riken-aip/pyHSICLasso/blob/master/example/sample_multi_variate_output.py) for details.
 
 ## Example
 
