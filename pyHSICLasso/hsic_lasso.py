@@ -18,8 +18,8 @@ standard_library.install_aliases()
 
 def compute_input_matrix(X_in, feature_idx, B, n, discarded, perms, x_kernel):
 
-    H = np.eye(B) - 1 / B * np.ones(B)
-    X = np.zeros((n * B * perms, 1))
+    H = np.eye(B, dtype=np.float32) - 1 / B * np.ones(B, dtype=np.float32)
+    X = np.zeros((n * B * perms, 1), dtype=np.float32)
 
     st = 0
     ed = B ** 2
@@ -67,17 +67,17 @@ def hsic_lasso(X_in, Y_in, y_kernel, x_kernel='Gauss', n_jobs=-1, discarded=0, B
     dy = Y_in.shape[0]
 
     # Centering matrix
-    H = np.eye(B) - 1 / B * np.ones(B)
-    lf = np.zeros((n * B * perms, 1))
+    H = np.eye(B, dtype=np.float32) - 1 / B * np.ones(B, dtype=np.float32)
+    lf = np.zeros((n * B * perms, 1), dtype=np.float32)
     index = np.arange(n)
     st = 0
     ed = B**2
 
     # Normalize data
     if x_kernel == 'Gauss':
-        X_in = X_in / (X_in.std(1)[:, None] + 10e-20)
+        X_in = (X_in / (X_in.std(1)[:, None] + 10e-20)).astype(np.float32)
     if y_kernel == "Gauss":
-        Y_in = Y_in / (Y_in.std(1)[:, None] + 10e-20)
+        Y_in = (Y_in / (Y_in.std(1)[:, None] + 10e-20)).astype(np.float32)
 
     # Compute y kernel matrix
     for p in range(perms):

@@ -43,7 +43,7 @@ def nlars(X, X_ty, num_feat, max_neighbors):
     A = []
     A_neighbors = []
     A_neighbors_score = []
-    beta = np.zeros((d, 1))
+    beta = np.zeros((d, 1), dtype=np.float32)
     path = lil_matrix((d, 4 * d))
     lam = np.zeros((1, 4 * d))
 
@@ -63,7 +63,7 @@ def nlars(X, X_ty, num_feat, max_neighbors):
 
     k = 0
     while sum(c[A]) / len(A) >= 1e-9 and len(A) < num_feat + 1:
-        s = np.ones((len(A), 1))
+        s = np.ones((len(A), 1), dtype=np.float32)
         w = np.linalg.solve(np.dot(X[:, A].transpose(), X[:, A]), s)
         XtXw = np.dot(X.transpose(), np.dot(X[:, A], w))
 
