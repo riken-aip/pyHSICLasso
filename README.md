@@ -72,6 +72,9 @@ When using python's list or numpy's ndarray, Let each index be sample number, le
 
 For multi-variate output cases, you can specify the output by using the list (`output_list`). See [Sample code](https://github.com/riken-aip/pyHSICLasso/blob/master/example/sample_multi_variate_output.py) for details.
 
+## To handle large number of samples 
+HSIC Lasso scales well with respect to the number of features `d`. However, the vanilla HSIC Lasso requires `O(dn^2)` memory space and may run out the memory if the number of samples `n` is more than 1000. In such case, we can use the block HSIC Lasso which required only `O(dnBM)` space, where `B << n` is the block parameter and `M` is the permutation parameter to stabilize the final result. This can be done by specifying `B` and `M` parameters in the regression or classification function. Our recommendation would be `B=20` and `B=3`. 
+
 ## Example
 
 ```py
