@@ -135,7 +135,6 @@ array([0.9789888 , 0.10350618, 0.09757666, 0.09751763, 0.09678892])
 
 
 ```
-![graph](https://www.fastpic.jp/images.php?file=6530104232.png)
 
 ## References
 -  Yamada, M., Tang, J., Lugo-Martinez, J., Hodzic, E., Shrestha, R., Saha, A., Ouyang, H., Yin, D., Mamitsuka, H., Sahinalp, C., Radivojac, P., Menczer, F., & Chang, Y. [Ultra High-Dimensional Nonlinear Feature Selection for Big Biological Data.
