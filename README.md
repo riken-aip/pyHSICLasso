@@ -138,9 +138,9 @@ array([0.9789888 , 0.10350618, 0.09757666, 0.09751763, 0.09678892])
 ![graph](https://www.fastpic.jp/images.php?file=6530104232.png)
 
 ## References
--  [Yamada, M., Tang, J., Lugo-Martinez, J., Hodzic, E., Shrestha, R., Saha, A., Ouyang, H., Yin, D., Mamitsuka, H., Sahinalp, C., Radivojac, P., Menczer, F., & Chang, Y. Ultra High-Dimensional Nonlinear Feature Selection for Big Biological Data.
-IEEE Transactions on Knowledge and Data Engineering (TKDE), pp.1352-1365, 2018.](https://ieeexplore.ieee.org/document/8248802/)
--  [Yamada, M., Jitkrittum, W., Sigal, L., Xing, E. P. & Sugiyama, M. High-Dimensional Feature Selection by Feature-Wise Kernelized Lasso. Neural Computation, vol.26, no.1, pp.185-207, 2014.](http://www.ms.k.u-tokyo.ac.jp/2014/HSICLasso.pdf)
+-  Yamada, M., Tang, J., Lugo-Martinez, J., Hodzic, E., Shrestha, R., Saha, A., Ouyang, H., Yin, D., Mamitsuka, H., Sahinalp, C., Radivojac, P., Menczer, F., & Chang, Y. [Ultra High-Dimensional Nonlinear Feature Selection for Big Biological Data.
+](https://ieeexplore.ieee.org/document/8248802/) IEEE Transactions on Knowledge and Data Engineering (TKDE), pp.1352-1365, 2018.
+- Yamada, M., Jitkrittum, W., Sigal, L., Xing, E. P. & Sugiyama, M. [High-Dimensional Feature Selection by Feature-Wise Kernelized Lasso.](http://www.ms.k.u-tokyo.ac.jp/2014/HSICLasso.pdf) Neural Computation, vol.26, no.1, pp.185-207, 2014.
 
 ## Contributors
 ### Developers
