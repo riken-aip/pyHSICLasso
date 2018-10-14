@@ -137,15 +137,15 @@ array([0.9789888 , 0.10350618, 0.09757666, 0.09751763, 0.09678892])
 ```
 ![graph](https://www.fastpic.jp/images.php?file=6530104232.png)
 
+## References
+-  [Ultra High-Dimensional Nonlinear Feature Selection for Big Biological Data](https://ieeexplore.ieee.org/document/8248802/)
+-  [High-Dimensional Feature Selection by Feature-Wise Kernelized Lasso](http://www.ms.k.u-tokyo.ac.jp/2014/HSICLasso.pdf)
 
 ## Contributors
 ### Developers
 Name : Makoto Yamada, Héctor Climente-González
 
 E-mail : makoto.yamada@riken.jp
-
-- [HSICLasso Page](http://www.makotoyamada-ml.com/hsiclasso.html)
-- [HSICLasso Paper](https://arxiv.org/pdf/1202.0515.pdf)
 
 ### Distributor
 Name : Hirotaka Suetake
