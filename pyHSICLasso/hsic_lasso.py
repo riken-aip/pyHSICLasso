@@ -109,6 +109,13 @@ def hsic_lasso(X_in, Y_in, y_kernel, x_kernel='Gauss', n_jobs=-1, discarded=0, B
     # Preparing design matrix for HSIC Lars
     result = Parallel(n_jobs=n_jobs)([delayed(compute_input_matrix)(
         X_in[k, :], k, B, n, discarded, perms, x_kernel) for k in range(d)])
+
+    # non-parallel version for debugging purposes
+    # result = []
+    # for k in range(d):
+    #     X = compute_input_matrix(X_in[k, :], k, B, n, discarded, perms, x_kernel)
+    #     result.append(X)
+
     result = dict(result)
 
     X = np.array([result[k] for k in range(d)]).T
