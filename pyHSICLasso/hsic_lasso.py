@@ -100,7 +100,7 @@ def hsic_lasso(X_in, Y_in, y_kernel, x_kernel='Gauss', n_jobs=-1, discarded=0, B
             L = np.dot(H, np.dot(L, H))
 
             # Normalize HSIC tr(L*L) = 1
-            L = L / np.linalg.norm(L, 'fro')
+            L = L / (np.linalg.norm(L, 'fro') + 10e-10)
 
             lf[st:ed, 0] = L.flatten()
             st += B**2
