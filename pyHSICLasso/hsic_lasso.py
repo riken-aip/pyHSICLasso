@@ -43,7 +43,7 @@ def compute_input_matrix(X_in, feature_idx, B, n, discarded, perms, x_kernel):
             tmp = np.dot(np.dot(H, Kx), H)
 
             # Normalize HSIC tr(tmp*tmp) = 1
-            tmp = tmp / np.linalg.norm(tmp, 'fro')
+            tmp = tmp / (np.linalg.norm(tmp, 'fro') + 10e-10)
             X[st:ed, 0] = tmp.flatten()
             st += B ** 2
             ed += B ** 2
