@@ -71,7 +71,7 @@ def nlars(X, X_ty, num_feat, max_neighbors):
         except np.linalg.linalg.LinAlgError:
             # matrix is singular
             w = np.linalg.solve(np.dot(X[:, A].transpose(), X[:, A]) + 10e-10*np.eye(len(A)), s)
-            XtXw = np.dot(X.transpose(), np.dot(X[:, A], w))
+            XtXw = np.dot(X.transpose(), np.dot(X[:, A], w)) + 10e-10*w
 
         gamma1 = (C - c[I]) / (XtXw[A[0]] - XtXw[I])
         gamma2 = -beta[A] / (w)
