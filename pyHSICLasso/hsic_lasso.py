@@ -51,7 +51,7 @@ def compute_input_matrix(X_in, feature_idx, B, n, discarded, perms, x_kernel):
     return (feature_idx, X.flatten())
 
 
-def hsic_lasso(X_in, Y_in, y_kernel, x_kernel='Gauss', n_jobs=-1, discarded=0, B=0, perms=1):
+def hsic_lasso(X_in, Y_in, y_kernel, x_kernel='Gauss', n_jobs=-1, discarded=0, B=0, perms=1, eta=0.0):
     """
     Input:
         X_in      input_data
@@ -102,7 +102,13 @@ def hsic_lasso(X_in, Y_in, y_kernel, x_kernel='Gauss', n_jobs=-1, discarded=0, B
             # Normalize HSIC tr(L*L) = 1
             L = L / np.linalg.norm(L, 'fro')
 
-            lf[st:ed, 0] = L.flatten()
+            if eta != 0:
+                Kfull = kernel_gaussian(X_in[:,index[i:j]],X_in[:,index[i:j]],d)
+                Kfull = np.dot(H, np.dot(Kfull, H))
+                Kfull = Kfull / np.linalg.norm(Kfull, 'fro')
+                lf[st:ed, 0] = L.flatten() + eta*Kfull.flatten()
+            else:
+                lf[st:ed, 0] = L.flatten()
             st += B**2
             ed += B**2
 
