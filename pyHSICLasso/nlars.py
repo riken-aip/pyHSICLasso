@@ -64,7 +64,14 @@ def nlars(X, X_ty, num_feat, max_neighbors):
     k = 0
     while sum(c[A]) / len(A) >= 1e-9 and len(A) < num_feat + 1:
         s = np.ones((len(A), 1), dtype=np.float32)
-        w = np.linalg.solve(np.dot(X[:, A].transpose(), X[:, A]), s)
+
+        try:
+            w = np.linalg.solve(np.dot(X[:, A].transpose(), X[:, A]), s)
+        except np.linalg.linalg.LinAlgError:
+            # matrix is singular
+            X_noisy = X[:, A] + np.random.normal(0, 10e-10, X[:, A].shape)
+            w = np.linalg.solve(np.dot(X_noisy.transpose(), X_noisy), s) 
+
         XtXw = np.dot(X.transpose(), np.dot(X[:, A], w))
 
         gamma1 = (C - c[I]) / (XtXw[A[0]] - XtXw[I])

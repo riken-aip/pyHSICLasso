@@ -50,7 +50,10 @@ class HSICLasso(object):
         elif isinstance(args[0], list):
             self._input_data_list(args[0], args[1])
         elif isinstance(args[0], np.ndarray):
-            self._input_data_ndarray(args[0], args[1])
+            if len(args) == 2:
+                self._input_data_ndarray(args[0], args[1])
+            if len(args) == 3:
+                self._input_data_ndarray(args[0], args[1], args[2])
         else:
             pass
         if self.X_in is None or self.Y_in is None:
@@ -296,7 +299,7 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
     # ========================================
 
     def _check_args(self, args):
-        if len(args) == 0 or len(args) >= 3:
+        if len(args) == 0 or len(args) >= 4:
             raise SyntaxError("Input as input_data(file_name) or \
                 input_data(X_in, Y_in)")
         elif len(args) == 1:
@@ -326,6 +329,12 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
                     raise TypeError("Check arg type")
             else:
                 raise TypeError("Check arg type")
+        elif len(args) == 3:
+            if isinstance(args[0], np.ndarray) and isinstance(args[1], np.ndarray) and isinstance(args[2], list):
+                        pass
+            else:
+                raise TypeError("Check arg type")
+
         return True
 
     def _input_data_file(self, file_name, output_list):
@@ -347,11 +356,12 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
         self.Y_in = np.array(Y_in).reshape(1, len(Y_in))
         return True
 
-    def _input_data_ndarray(self, X_in, Y_in):
+    def _input_data_ndarray(self, X_in, Y_in, featname = None):
         if len(Y_in.shape) == 2:
             raise ValueError("Check your input data")
         self.X_in = X_in.T
         self.Y_in = Y_in.reshape(1, len(Y_in))
+        self.featname = featname if featname else [ x for x in range(1, X_in.shape[1] + 1) ]
         return True
 
     def _check_shape(self):

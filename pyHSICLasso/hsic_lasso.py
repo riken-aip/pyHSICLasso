@@ -43,7 +43,7 @@ def compute_input_matrix(X_in, feature_idx, B, n, discarded, perms, x_kernel):
             tmp = np.dot(np.dot(H, Kx), H)
 
             # Normalize HSIC tr(tmp*tmp) = 1
-            tmp = tmp / np.linalg.norm(tmp, 'fro')
+            tmp = tmp / (np.linalg.norm(tmp, 'fro') + 10e-10)
             X[st:ed, 0] = tmp.flatten()
             st += B ** 2
             ed += B ** 2
@@ -100,7 +100,7 @@ def hsic_lasso(X_in, Y_in, y_kernel, x_kernel='Gauss', n_jobs=-1, discarded=0, B
             L = np.dot(H, np.dot(L, H))
 
             # Normalize HSIC tr(L*L) = 1
-            L = L / np.linalg.norm(L, 'fro')
+            L = L / (np.linalg.norm(L, 'fro') + 10e-10)
 
             lf[st:ed, 0] = L.flatten()
             st += B**2
@@ -109,6 +109,13 @@ def hsic_lasso(X_in, Y_in, y_kernel, x_kernel='Gauss', n_jobs=-1, discarded=0, B
     # Preparing design matrix for HSIC Lars
     result = Parallel(n_jobs=n_jobs)([delayed(compute_input_matrix)(
         X_in[k, :], k, B, n, discarded, perms, x_kernel) for k in range(d)])
+
+    # non-parallel version for debugging purposes
+    # result = []
+    # for k in range(d):
+    #     X = compute_input_matrix(X_in[k, :], k, B, n, discarded, perms, x_kernel)
+    #     result.append(X)
+
     result = dict(result)
 
     X = np.array([result[k] for k in range(d)]).T
