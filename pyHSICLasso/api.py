@@ -352,6 +352,7 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
             raise ValueError("Check your input data")
         self.X_in = X_in.T
         self.Y_in = Y_in.reshape(1, len(Y_in))
+        self.featname = [ x for x in range(1, X_in.shape[1] + 1) ]
         return True
 
     def _check_shape(self):
