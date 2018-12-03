@@ -98,7 +98,7 @@ You can specify the number of subset of feature selections with arguments `regre
 >>> hsic_lasso.classification(10)
 ```
 
-About output method, it is possible to select plots on the graph, details of the analysis result, output of the feature index.
+About output method, it is possible to select plots on the graph, details of the analysis result, output of the feature index. Note, to run the dump() function, it needs at least 5 features in the dataset.
 
 ```py
 >>> hsic_lasso.plot()
