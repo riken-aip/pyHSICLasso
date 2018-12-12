@@ -34,7 +34,7 @@ def input_txt_file(file_name, output_list, sep):
         if output_name in featname:
             tmp = featname.index(output_name)
             output_index.append(tmp)
-            input_index.pop(tmp)
+            input_index.remove(tmp)
         else:
             raise ValueError("Output variable, %s, not found" % (output_name))
 
