@@ -95,7 +95,7 @@ def hsic_lasso(X_in, Y_in, y_kernel, x_kernel='Gauss', n_jobs=-1, discarded=0, B
                 L = kernel_delta_norm(Y_in[:, index[i:j]], Y_in[:, index[i:j]])
             elif y_kernel == "Gauss":
                 YY = Y_in[:, index[i:j]]
-                L = kernel_gaussian(YY, YY, np.sqrt(dy))
+                L = kernel_gaussian(YY, YY, dy)
 
             L = np.dot(H, np.dot(L, H))
 
