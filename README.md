@@ -45,13 +45,13 @@ This class has the following methods.
 - get_index_score
 - get_index_neighbors
 - get_index_neighbors_score
+- save_param
 
 The input format corresponds to the following formats.
 
 - MATLAB file (.mat)
 - .csv
 - .tsv
-- python's list
 - numpy's ndarray
 
 ## Input file
@@ -68,9 +68,16 @@ class,v1,v2,v3,v4,v5,v6,v7,v8,v9,v10
 
 ```
 
-When using python's list or numpy's ndarray, Let each index be sample number, let values of each features for X[ind] and classification value for Y[ind].
-
 For multi-variate output cases, you can specify the output by using the list (`output_list`). See [Sample code](https://github.com/riken-aip/pyHSICLasso/blob/master/example/sample_multi_variate_output.py) for details.
+
+## Save results to a csv file
+If you want to save the feature selection results in csv file, please call the following function:
+
+```
+>>> hsic_lasso.save_param()
+```
+
+
 
 ## To handle large number of samples 
 HSIC Lasso scales well with respect to the number of features `d`. However, the vanilla HSIC Lasso requires `O(dn^2)` memory space and may run out the memory if the number of samples `n` is more than 1000. In such case, we can use the block HSIC Lasso which requires only `O(dnBM)` space, where `B << n` is the block parameter and `M` is the permutation parameter to stabilize the final result. This can be done by specifying `B` and `M` parameters in the regression or classification function. Our recommendation would be `B=20` and `M=3`. 
@@ -130,14 +137,14 @@ array([0.09723658, 0.05218047, 0.03264885, 0.01360242, 0.00319763])
 >>> hsic_lasso.get_index_neighbors_score(feat_index=0,num_neighbors=5)
 array([0.9789888 , 0.10350618, 0.09757666, 0.09751763, 0.09678892])
 
-
+>>> hsic_lasso.save_param() #Save selected features and its neighbors 
 
 ```
 
 ## References
 -  Yamada, M., Tang, J., Lugo-Martinez, J., Hodzic, E., Shrestha, R., Saha, A., Ouyang, H., Yin, D., Mamitsuka, H., Sahinalp, C., Radivojac, P., Menczer, F., & Chang, Y. [Ultra High-Dimensional Nonlinear Feature Selection for Big Biological Data.
 ](https://ieeexplore.ieee.org/document/8248802/) IEEE Transactions on Knowledge and Data Engineering (TKDE), pp.1352-1365, 2018.
-- Yamada, M., Jitkrittum, W., Sigal, L., Xing, E. P. & Sugiyama, M. [High-Dimensional Feature Selection by Feature-Wise Kernelized Lasso.](http://www.ms.k.u-tokyo.ac.jp/2014/HSICLasso.pdf) Neural Computation, vol.26, no.1, pp.185-207, 2014.
+- Yamada, M., Jitkrittum, W., Sigal, L., Xing, E. P. & Sugiyama, M. [High-Dimensional Feature Selection by Feature-Wise Kernelized Lasso.](http://www.ms.k.u-tokyo.ac.jp/2014/HSICLasso.pdf) Neural Computation, vol.26, no.1, pp.185-207, 2014. (**Google scholar citations: 89** as of 2018/12/13)
 
 ## Contributors
 ### Developers
