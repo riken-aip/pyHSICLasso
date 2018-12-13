@@ -44,14 +44,17 @@ class HSICLasso(object):
     def input(self, *args, **_3to2kwargs):
         if 'output_list' in _3to2kwargs: output_list = _3to2kwargs['output_list']; del _3to2kwargs['output_list']
         else: output_list = ['class']
+
         self._check_args(args)
         if isinstance(args[0], string_types):
             self._input_data_file(args[0], output_list)
-        elif isinstance(args[0], list):
-            self._input_data_list(args[0], args[1])
         elif isinstance(args[0], np.ndarray):
+            if 'featname' in _3to2kwargs:
+                featname = _3to2kwargs['featname']; del _3to2kwargs['featname']
+            else: featname = ['%d' % x for x in range(1, args[0].shape[1] + 1)]
+
             if len(args) == 2:
-                self._input_data_ndarray(args[0], args[1])
+                self._input_data_ndarray(args[0], args[1], featname)
             if len(args) == 3:
                 self._input_data_ndarray(args[0], args[1], args[2])
         else:
@@ -361,7 +364,7 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
             raise ValueError("Check your input data")
         self.X_in = X_in.T
         self.Y_in = Y_in.reshape(1, len(Y_in))
-        self.featname = featname if featname else [ x for x in range(1, X_in.shape[1] + 1) ]
+        self.featname = featname
         return True
 
     def _check_shape(self):

@@ -8,16 +8,27 @@ from future import standard_library
 
 from pyHSICLasso import HSICLasso
 
+import scipy.io as sio
+
 standard_library.install_aliases()
 
 
 def main():
+
+    #Numpy array input example
     hsic_lasso = HSICLasso()
-    hsic_lasso.input("../tests/test_data/matlab_data.mat")
+    data = sio.loadmat("../tests/test_data/matlab_data.mat")
+    X = data['X'].transpose()
+    Y = data['Y'][0]
+    featname = [ 'Feat%d' % x for x in range(1, X.shape[1] + 1) ]
+
+    hsic_lasso.input(X,Y,featname=featname)
     hsic_lasso.regression(5)
     hsic_lasso.dump()
     hsic_lasso.plot_path()
 
+    #Save parameters
+    hsic_lasso.save_param()
 
 if __name__ == "__main__":
     main()
