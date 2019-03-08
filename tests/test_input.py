@@ -22,7 +22,7 @@ class InputTest(unittest.TestCase):
     def test_check_arg(self):
         with self.assertRaises(SyntaxError):
             self.hsic_lasso._check_args([])
-        with self.assertRaises(SyntaxError):
+        with self.assertRaises(TypeError):
             self.hsic_lasso._check_args([1, 2, 3])
         with self.assertRaises(ValueError):
             self.hsic_lasso._check_args(["txt"])
