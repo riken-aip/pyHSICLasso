@@ -16,8 +16,8 @@ standard_library.install_aliases()
 
 def nlars(X, X_ty, num_feat, max_neighbors):
     """
-    We used the Nonnegative LARS solver.
-    http://www2.imm.dtu.dk/pubdb/views/edoc_download.php/5523/zip/imm5523.zip
+    We used the a Python implementation of the Nonnegative LARS solver
+    written in MATLAB at http://orbit.dtu.dk/files/5618980/imm5523.zip
 
     Solves the problem argmin_beta 1/2||y-X*beta||_2^2  s.t. beta>=0.
     The problem is solved using a modification of the Least Angle Regression

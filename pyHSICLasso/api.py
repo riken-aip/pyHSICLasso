@@ -64,27 +64,32 @@ class HSICLasso(object):
         self._check_shape()
         return True
 
-    def regression(self, num_feat=5, B=0, M=1, discrete_x=False, max_neighbors=10, n_jobs=-1):
+    def regression(self, num_feat=5, B=0, M=1, discrete_x=False, max_neighbors=10, 
+                   n_jobs=-1, covars = np.array([])):
         self._run_hsic_lasso(num_feat=num_feat,
                              y_kernel="Gauss",
                              B=B, M=M,
                              discrete_x=discrete_x,
                              max_neighbors=max_neighbors,
-                             n_jobs=n_jobs)
+                             n_jobs=n_jobs,
+                             covars = covars)
 
         return True
 
-    def classification(self, num_feat=5, B=0, M=1, discrete_x=False, max_neighbors=10, n_jobs=-1):
+    def classification(self, num_feat=5, B=0, M=1, discrete_x=False, max_neighbors=10, 
+                       n_jobs=-1, covars = np.array([])):
         self._run_hsic_lasso(num_feat=num_feat,
                              y_kernel="Delta",
                              B=B, M=M,
                              discrete_x=discrete_x,
                              max_neighbors=max_neighbors,
-                             n_jobs=n_jobs)
+                             n_jobs=n_jobs,
+                             covars = covars)
 
         return True
 
-    def _run_hsic_lasso(self, y_kernel, num_feat, B, M, discrete_x, max_neighbors, n_jobs):
+    def _run_hsic_lasso(self, y_kernel, num_feat, B, M, discrete_x, 
+                        max_neighbors, n_jobs, covars):
         if self.X_in is None or self.Y_in is None:
             raise UnboundLocalError("Input your data")
         self.max_neighbors = max_neighbors
@@ -109,6 +114,13 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
         # np.concatenate(self.X, axis = 0) * np.sqrt(1/(numblocks * perms))
         self.X = X * np.sqrt(1 / (numblocks * perms))
         self.Xty = Xty * 1 / (numblocks * perms)
+
+        if covars.size:
+            C,Cty = hsic_lasso(covars, self.Y_in, y_kernel, "Gauss",
+                               n_jobs=n_jobs, discarded=discarded, B=B, perms=perms)
+
+            betas = Cty / np.trace(np.dot(C.T,C))
+            self.Xty = self.Xty - np.dot(betas, C)
 
         self.path, self.beta, self.A, self.lam, self.A_neighbors, \
             self.A_neighbors_score = nlars(
@@ -334,7 +346,7 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
                 raise TypeError("Check arg type")
         elif len(args) == 3:
             if isinstance(args[0], np.ndarray) and isinstance(args[1], np.ndarray) and isinstance(args[2], list):
-                        pass
+                pass
             else:
                 raise TypeError("Check arg type")
 
