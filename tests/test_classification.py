@@ -63,5 +63,12 @@ class ClassificationTest(unittest.TestCase):
             self.assertEqual(str(w[-1].message), "B {} must be an exact divisor of the \
 number of samples {}. Number of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)))
 
+        # Covariates
+        # self.hsic_lasso.input("./tests/test_data/csv_data.csv")
+        # covars = self.hsic_lasso.X_in[[764, 1422, 512, 248, 266], :]
+        # B = int(self.hsic_lasso.X_in.shape[1]/2)
+        # self.hsic_lasso.classification(5, B, 10, discrete_x = True, covars = covars)
+        # self.assertEqual(self.hsic_lasso.A, [764, 1422, 512, 248, 266])
+
 if __name__ == "__main__":
     unittest.main()
