@@ -51,41 +51,41 @@ def compute_input_matrix(X_in, feature_idx, B, n, discarded, perms, x_kernel):
     return (feature_idx, X.flatten())
 
 
-def hsic_lasso(X_in, Y_in, y_kernel, x_kernel='Gauss', n_jobs=-1, discarded=0, B=0, perms=1):
+def hsic_lasso(X, Y, y_kernel, x_kernel='Gauss', n_jobs=-1, discarded=0, B=0, M=1):
     """
     Input:
-        X_in      input_data
-        Y_in      target_data
+        X      input_data
+        Y      target_data
         y_kernel  We employ the Gaussian kernel for inputs. For output kernels,
                   we use the Gaussian kernel for regression cases and
                   the delta kernel for classification problems.
     Output:
-        X         matrix of size d x (n * B (or n) * perms)
+        X         matrix of size d x (n * B (or n) * M)
         X_ty      vector of size d x 1
     """
-    d, n = X_in.shape
-    dy = Y_in.shape[0]
+    d, n = X.shape
+    dy = Y.shape[0]
 
-    lf = np.zeros((n * B * perms, dy))
+    L = np.zeros((n * B * M, dy))
     for i in range(dy):
-        lf[:,i] = compute_kernel(Y_in[i,:], y_kernel, B, perms, discarded)
+        L[:,i] = compute_kernel(Y[i,:], y_kernel, B, M, discarded)
 
     # Preparing design matrix for HSIC Lars
-    # result = Parallel(n_jobs=n_jobs)([delayed(parallel_compute_kernel)(
-    #     X_in[k, :], k, B, n, discarded, perms, x_kernel) for k in range(d)])
+    result = Parallel(n_jobs=n_jobs)([delayed(parallel_compute_kernel)(
+        X[k, :], x_kernel, k, B, M, n, discarded) for k in range(d)])
 
     # non-parallel version for debugging purposes
-    result = []
-    for k in range(d):
-        X = parallel_compute_kernel(X_in[k, :], k, B, n, discarded, perms, x_kernel)
-        result.append(X)
+    # result = []
+    # for k in range(d):
+    #     X = parallel_compute_kernel(X[k, :], x_kernel, k, B, M, n, discarded)
+    #     result.append(X)
 
     result = dict(result)
 
-    X = np.array([result[k] for k in range(d)]).T
-    X_ty = np.dot(X.T, lf)
+    K = np.array([result[k] for k in range(d)]).T
+    KtL = np.dot(K.T, L)
 
-    return X, X_ty
+    return K, KtL
 
 def compute_kernel(x, kernel, B = 0, M = 1, discarded = 0):
 
@@ -126,6 +126,6 @@ def compute_kernel(x, kernel, B = 0, M = 1, discarded = 0):
 
     return K
 
-def parallel_compute_kernel(x, feature_idx, B, n, discarded, M, kernel):
+def parallel_compute_kernel(x, kernel, feature_idx, B, M, n, discarded):
 
     return (feature_idx, compute_kernel(x, kernel, B, M, discarded))

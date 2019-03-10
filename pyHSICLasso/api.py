@@ -104,7 +104,7 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
         perms = 1 + bool(numblocks - 1) * (M - 1)
 
         X, Xty = hsic_lasso(self.X_in, self.Y_in, y_kernel, x_kernel,
-                            n_jobs=n_jobs, discarded=discarded, B=B, perms=perms)
+                            n_jobs=n_jobs, discarded=discarded, B=B, M=perms)
 
         # np.concatenate(self.X, axis = 0) * np.sqrt(1/(numblocks * perms))
         self.X = X * np.sqrt(1 / (numblocks * perms))
