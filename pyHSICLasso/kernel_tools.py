@@ -20,13 +20,10 @@ def kernel_delta_norm(X_in_1, X_in_2):
     for ind in u_list:
         ind_1 = (X_in_1 == ind)
         ind_2 = (X_in_2 == ind)
-        idx = (ind_1 & ind_2.T)
+        idx = np.outer(ind_1, ind_2)
         c_1 = np.sqrt(np.count_nonzero(ind_1))
         c_2 = np.sqrt(np.count_nonzero(ind_2))
-        try:
-            K[idx] = 1 / c_1 / c_2
-        except:
-            import pdb; pdb.set_trace()
+        K[idx] = 1 / c_1 / c_2
     return K
 
 
@@ -38,14 +35,14 @@ def kernel_delta(X_in_1, X_in_2):
     for ind in u_list:
         ind_1 = (X_in_1 == ind)
         ind_2 = (X_in_2 == ind)
-        idx = (ind_1 & ind_2.T)
+        idx = np.outer(ind_1, ind_2.T)
         K[idx] = 1
     return K
 
 
 def kernel_gaussian(X_in_1, X_in_2, sigma):
-    X_in_12 = np.sum(np.power(X_in_1, 2))
-    X_in_22 = np.sum(np.power(X_in_2, 2))
-    dist_2 = (X_in_12 + X_in_22.T) - 2 * np.dot(X_in_1.T, X_in_2)
+    X_in_12 = np.power(X_in_1, 2)
+    X_in_22 = np.power(X_in_2, 2)
+    dist_2 = np.add.outer(X_in_12, X_in_22.T) - 2 * np.outer(X_in_1.T, X_in_2)
     K = np.exp(-dist_2 / (2 * np.power(sigma, 2)))
     return K

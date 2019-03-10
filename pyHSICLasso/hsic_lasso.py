@@ -72,7 +72,7 @@ def hsic_lasso(X, Y, y_kernel, x_kernel='Gauss', n_jobs=-1, discarded=0, B=0, M=
 
     # Preparing design matrix for HSIC Lars
     result = Parallel(n_jobs=n_jobs)([delayed(parallel_compute_kernel)(
-        X[k, :], x_kernel, k, B, M, n, discarded) for k in range(d)])
+        X[k,:], x_kernel, k, B, M, n, discarded) for k in range(d)])
 
     # non-parallel version for debugging purposes
     # result = []
@@ -101,26 +101,23 @@ def compute_kernel(x, kernel, B = 0, M = 1, discarded = 0):
     st = 0
     ed = B ** 2
     index = np.arange(n)
-    for p in range(M):
-        np.random.seed(p)
+    for m in range(M):
+        np.random.seed(m)
         index = np.random.permutation(index)
 
         for i in range(0, n - discarded, B):
             j = min(n, i + B)
 
             if kernel == 'Gauss':
-                try:
-                    Kx = kernel_gaussian(x[index[i:j]], x[index[i:j]], 1.0)
-                except:
-                    import pdb; pdb.set_trace()
+                k = kernel_gaussian(x[index[i:j]], x[index[i:j]], 1.0)
             elif kernel == 'Delta':
-                Kx = kernel_delta_norm(x[index[i:j]], x[index[i:j]])
+                k = kernel_delta_norm(x[index[i:j]], x[index[i:j]])
 
-            tmp = np.dot(np.dot(H, Kx), H)
+            k = np.dot(np.dot(H, k), H)
 
-            # Normalize HSIC tr(tmp*tmp) = 1
-            tmp = tmp / (np.linalg.norm(tmp, 'fro') + 10e-10)
-            K[st:ed] = tmp.flatten()
+            # Normalize HSIC tr(k*k) = 1
+            k = k / (np.linalg.norm(k, 'fro') + 10e-10)
+            K[st:ed] = k.flatten()
             st += B ** 2
             ed += B ** 2
 
