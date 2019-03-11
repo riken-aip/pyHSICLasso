@@ -14,7 +14,6 @@ from pyHSICLasso import HSICLasso
 
 standard_library.install_aliases()
 
-
 class ClassificationTest(unittest.TestCase):
     def setUp(self):
         self.hsic_lasso = HSICLasso()
@@ -27,11 +26,11 @@ class ClassificationTest(unittest.TestCase):
             self.hsic_lasso.classification()
 
         self.hsic_lasso.input("./tests/test_data/csv_data.csv")
-        self.hsic_lasso.classification(5, discrete_x = True, n_jobs = 1)
+        self.hsic_lasso.classification(5, B = 0, discrete_x = True, n_jobs = 1)
         self.assertEqual(self.hsic_lasso.A, [764, 1422, 512, 248, 1581])
 
         self.hsic_lasso.input("./tests/test_data/csv_data.csv")
-        self.hsic_lasso.classification(10, discrete_x = True, n_jobs = 1)
+        self.hsic_lasso.classification(10, B = 0, discrete_x = True, n_jobs = 1)
         self.assertEqual(self.hsic_lasso.A, [764, 1422, 512, 248, 1581, 
                                              1670, 1771, 896, 779, 266])
 
@@ -64,11 +63,10 @@ class ClassificationTest(unittest.TestCase):
 number of samples {}. Number of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)))
 
         # Covariates
-        # self.hsic_lasso.input("./tests/test_data/csv_data.csv")
-        # covars = self.hsic_lasso.X_in[[764, 1422, 512, 248, 266], :]
-        # B = int(self.hsic_lasso.X_in.shape[1]/2)
-        # self.hsic_lasso.classification(5, B, 10, discrete_x = True, covars = covars)
-        # self.assertEqual(self.hsic_lasso.A, [764, 1422, 512, 248, 266])
+        self.hsic_lasso.input("./tests/test_data/matlab_data.mat")
+        covars = self.hsic_lasso.X_in[[1422, 512],:].T
+        self.hsic_lasso.classification(5, B = 0, n_jobs = 1, covars = covars)
+        self.assertEqual(self.hsic_lasso.A, [622, 841, 1636, 1891, 116])
 
 if __name__ == "__main__":
     unittest.main()

@@ -15,43 +15,7 @@ from .kernel_tools import kernel_delta_norm, kernel_gaussian
 
 standard_library.install_aliases()
 
-
-def compute_input_matrix(X_in, feature_idx, B, n, discarded, perms, x_kernel):
-
-    H = np.eye(B, dtype=np.float32) - 1 / B * np.ones(B, dtype=np.float32)
-    X = np.zeros((n * B * perms, 1), dtype=np.float32)
-
-    st = 0
-    ed = B ** 2
-    index = np.arange(n)
-    for p in range(perms):
-        np.random.seed(p)
-        index = np.random.permutation(index)
-
-        for i in range(0, n - discarded, B):
-            j = min(n, i + B)
-
-            # Normalization
-            XX = X_in[index[i:j]]
-            XX = XX.reshape((1, B))
-
-            if x_kernel == 'Gauss':
-                Kx = kernel_gaussian(XX[0, None], XX[0, None], 1.0)
-            elif x_kernel == 'Delta':
-                Kx = kernel_delta_norm(XX[0, None], XX[0, None])
-
-            tmp = np.dot(np.dot(H, Kx), H)
-
-            # Normalize HSIC tr(tmp*tmp) = 1
-            tmp = tmp / (np.linalg.norm(tmp, 'fro') + 10e-10)
-            X[st:ed, 0] = tmp.flatten()
-            st += B ** 2
-            ed += B ** 2
-
-    return (feature_idx, X.flatten())
-
-
-def hsic_lasso(X, Y, y_kernel, x_kernel='Gauss', n_jobs=-1, discarded=0, B=0, M=1):
+def hsic_lasso(X, Y, y_kernel, x_kernel='Gaussian', n_jobs=-1, discarded=0, B=0, M=1):
     """
     Input:
         X      input_data
@@ -72,7 +36,6 @@ def hsic_lasso(X, Y, y_kernel, x_kernel='Gauss', n_jobs=-1, discarded=0, B=0, M=
     #    L[:,i] = compute_kernel(Y[i,:], y_kernel, B, M, discarded)
     L = compute_kernel(Y, y_kernel, B, M, discarded)
     L = np.reshape(L,(n * B * M,1))
-
 
     # Preparing design matrix for HSIC Lars
     result = Parallel(n_jobs=n_jobs)([delayed(parallel_compute_kernel)(
@@ -95,12 +58,11 @@ def compute_kernel(x, kernel, B = 0, M = 1, discarded = 0):
 
     d,n = x.shape
 
-
     H = np.eye(B, dtype=np.float32) - 1 / B * np.ones(B, dtype=np.float32)
     K = np.zeros(n * B * M, dtype=np.float32)
 
     # Normalize data
-    if kernel == "Gauss":
+    if kernel == "Gaussian":
         x = (x / (x.std() + 10e-20)).astype(np.float32)
 
     st = 0
@@ -113,9 +75,9 @@ def compute_kernel(x, kernel, B = 0, M = 1, discarded = 0):
         for i in range(0, n - discarded, B):
             j = min(n, i + B)
 
-            if kernel == 'Gauss':
+            if kernel == 'Gaussian':
                 k = kernel_gaussian(x[:,index[i:j]], x[:,index[i:j]], np.sqrt(d))
-            elif kernel == 'Delta':
+            elif kernel == 'Dirac':
                 k = kernel_delta_norm(x[:,index[i:j]], x[:, index[i:j]])
 
             k = np.dot(np.dot(H, k), H)

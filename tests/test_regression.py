@@ -27,11 +27,11 @@ class RegressionTest(unittest.TestCase):
             self.hsic_lasso.regression()
 
         self.hsic_lasso.input("./tests/test_data/matlab_data.mat")
-        self.hsic_lasso.regression(5, n_jobs = 1)
+        self.hsic_lasso.regression(5, B = 0, n_jobs = 1)
         self.assertEqual(self.hsic_lasso.A, [1099, 99, 199, 1299, 299])
 
         self.hsic_lasso.input("./tests/test_data/matlab_data.mat")
-        self.hsic_lasso.regression(10, n_jobs = 1)
+        self.hsic_lasso.regression(10, B = 0, n_jobs = 1)
         self.assertEqual(self.hsic_lasso.A, [1099, 99, 199, 1299, 1477,
                                              1405, 1073, 299,1596, 358])
 
@@ -62,6 +62,12 @@ class RegressionTest(unittest.TestCase):
             self.assertEqual(w[-1].category, RuntimeWarning)
             self.assertEqual(str(w[-1].message), "B {} must be an exact divisor of the \
 number of samples {}. Number of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)))
+
+        # Covariates
+        self.hsic_lasso.input("./tests/test_data/matlab_data.mat")
+        covars = self.hsic_lasso.X_in[[99,299],:].T
+        self.hsic_lasso.regression(5, B = 0, n_jobs = 1, covars = covars)
+        self.assertEqual(self.hsic_lasso.A, [199, 1477, 1405, 1073, 1596])
 
 if __name__ == "__main__":
     unittest.main()
