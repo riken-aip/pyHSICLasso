@@ -14,7 +14,7 @@ import scipy.spatial.distance as distance
 from scipy.cluster.hierarchy import linkage
 from six import string_types
 
-from .hsic_lasso import hsic_lasso
+from .hsic_lasso import hsic_lasso, compute_kernel
 from .input_data import input_csv_file, input_matlab_file, input_tsv_file
 from .nlars import nlars
 from .plot_figure import plot_dendrogram, plot_heatmap, plot_path
@@ -64,40 +64,40 @@ class HSICLasso(object):
         self._check_shape()
         return True
 
-    def regression(self, num_feat=5, B=0, M=1, discrete_x=False, max_neighbors=10, 
-                   n_jobs=-1, covars = np.array([])):
+    def regression(self, num_feat=5, B=20, M=3, discrete_x=False, max_neighbors=10, n_jobs=-1, covars = np.array([])):
         self._run_hsic_lasso(num_feat=num_feat,
-                             y_kernel="Gauss",
+                             y_kernel="Gaussian",
                              B=B, M=M,
                              discrete_x=discrete_x,
                              max_neighbors=max_neighbors,
                              n_jobs=n_jobs,
-                             covars = covars)
+                             covars=covars)
 
         return True
 
-    def classification(self, num_feat=5, B=0, M=1, discrete_x=False, max_neighbors=10, 
-                       n_jobs=-1, covars = np.array([])):
+    def classification(self, num_feat=5, B=20, M=3, discrete_x=False, max_neighbors=10, n_jobs=-1, covars = np.array([])):
         self._run_hsic_lasso(num_feat=num_feat,
                              y_kernel="Delta",
                              B=B, M=M,
                              discrete_x=discrete_x,
                              max_neighbors=max_neighbors,
-                             n_jobs=n_jobs,
-                             covars = covars)
+                             n_jobs=n_jobs, 
+                             covars=covars)
 
         return True
 
-    def _run_hsic_lasso(self, y_kernel, num_feat, B, M, discrete_x, 
-                        max_neighbors, n_jobs, covars):
+    def _run_hsic_lasso(self, y_kernel, num_feat, B, M, discrete_x, max_neighbors, n_jobs, covars):
+
         if self.X_in is None or self.Y_in is None:
             raise UnboundLocalError("Input your data")
         self.max_neighbors = max_neighbors
         n = self.X_in.shape[1]
         B = B if B else n
-        x_kernel = "Delta" if discrete_x else "Gauss"
+        x_kernel = "Delta" if discrete_x else "Gaussian"
         numblocks = n / B
         discarded = n % B
+
+        print('Block HSIC Lasso B = {}.'.format(B))
 
         if discarded:
             msg = "B {} must be an exact divisor of the number of samples {}. Number \
@@ -106,14 +106,27 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
             numblocks = int(numblocks)
 
         # Number of permutations of the block HSIC
-        perms = 1 + bool(numblocks - 1) * (M - 1)
+        M = 1 + bool(numblocks - 1) * (M - 1)
+        print('M set to {}.'.format(M))
+        print('Using {} kernel for the features, {} kernel for the outcomes{}.'.format(
+            x_kernel, y_kernel, ' and Gaussian kernel for the covariates' if covars.size else ''))
 
-        X, Xty = hsic_lasso(self.X_in, self.Y_in, y_kernel, x_kernel,
-                            n_jobs=n_jobs, discarded=discarded, B=B, perms=perms)
+        X,Xty,Ky = hsic_lasso(self.X_in, self.Y_in, y_kernel, x_kernel,
+                              n_jobs=n_jobs, discarded=discarded, B=B, M=M)
 
-        # np.concatenate(self.X, axis = 0) * np.sqrt(1/(numblocks * perms))
-        self.X = X * np.sqrt(1 / (numblocks * perms))
-        self.Xty = Xty * 1 / (numblocks * perms)
+        # np.concatenate(self.X, axis = 0) * np.sqrt(1/(numblocks * M))
+        self.X = X * np.sqrt(1 / (numblocks * M))
+        self.Xty = Xty * 1 / (numblocks * M)
+
+        if covars.size:
+            Kc = compute_kernel(covars.transpose(), 'Gaussian', B, M, discarded)
+            Kc = np.reshape(Kc,(n * B * M,1))
+
+            Ky = Ky * np.sqrt(1 / (numblocks * M))
+            Kc = Kc * np.sqrt(1 / (numblocks * M))
+
+            betas = np.dot(Ky.transpose(),Kc) / np.trace(np.dot(Kc.T, Kc))
+            self.Xty = self.Xty - betas*np.dot(self.X.transpose(),Kc)
 
         if covars.size:
             C,Cty = hsic_lasso(covars, self.Y_in, y_kernel, "Gauss",
@@ -232,7 +245,7 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
         if self.X_in is None or self.Y_in is None:
             raise UnboundLocalError("Input your data")
 
-        self.X, self.X_ty = hsic_lasso(self.X_in, self.Y_in, "Gauss")
+        self.X, self.X_ty = hsic_lasso(self.X_in, self.Y_in, "Gaussian")
 
         K = np.dot(self.X.transpose(), self.X)
 
