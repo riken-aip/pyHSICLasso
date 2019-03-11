@@ -34,14 +34,13 @@ def _packages():
 
 setup(
     name="pyHSICLasso",
-    version="1.3.6",
+    version="1.4.0",
     author="Makoto Yamada",
     author_email="makoto.yamada@riken.jp",
     url="http://www.makotoyamada-ml.com/hsiclasso.html",
-    description="supervised feature selection considering the dependency of\
-        nonlinear input and output.",
+    description="Supervised, nonlinear feature selection method for high-dimensional datasets.",
     long_description=long_description,
-    download_url="https://github.com/suecharo/pyHSICLasso",
+    download_url="https://github.com/riken-aip/pyHSICLasso",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Science/Research",
@@ -58,7 +57,7 @@ setup(
     ],
     platforms=["python2.7", "python3.4", "python3.5", "python3.6"],
     license="MIT",
-    keywords="HSIC Lasso HSICLasso feature-selection data-science",
+    keywords="HSIC Lasso HSICLasso feature-selection feature-extraction machine-learning nonlinear data-science",
     setup_requires=["pytest-runner"],
     tests_require=["pytest"],
     install_requires=_install_requires(),
