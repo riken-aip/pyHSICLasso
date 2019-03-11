@@ -66,13 +66,17 @@ def hsic_lasso(X, Y, y_kernel, x_kernel='Gauss', n_jobs=-1, discarded=0, B=0, M=
     d, n = X.shape
     dy = Y.shape[0]
 
-    L = np.zeros((n * B * M, dy))
-    for i in range(dy):
-        L[:,i] = compute_kernel(Y[i,:], y_kernel, B, M, discarded)
+    #This is not right
+    #L = np.zeros((n * B * M, dy))
+    #for i in range(dy):
+    #    L[:,i] = compute_kernel(Y[i,:], y_kernel, B, M, discarded)
+    L = compute_kernel(Y, y_kernel, B, M, discarded)
+    L = np.reshape(L,(n * B * M,1))
+
 
     # Preparing design matrix for HSIC Lars
     result = Parallel(n_jobs=n_jobs)([delayed(parallel_compute_kernel)(
-        X[k,:], x_kernel, k, B, M, n, discarded) for k in range(d)])
+        np.reshape(X[k,:],(1,n)), x_kernel, k, B, M, n, discarded) for k in range(d)])
 
     # non-parallel version for debugging purposes
     # result = []
@@ -85,11 +89,12 @@ def hsic_lasso(X, Y, y_kernel, x_kernel='Gauss', n_jobs=-1, discarded=0, B=0, M=
     K = np.array([result[k] for k in range(d)]).T
     KtL = np.dot(K.T, L)
 
-    return K, KtL
+    return K, KtL, L
 
 def compute_kernel(x, kernel, B = 0, M = 1, discarded = 0):
 
-    n = x.shape[0]
+    d,n = x.shape
+
 
     H = np.eye(B, dtype=np.float32) - 1 / B * np.ones(B, dtype=np.float32)
     K = np.zeros(n * B * M, dtype=np.float32)
@@ -109,9 +114,9 @@ def compute_kernel(x, kernel, B = 0, M = 1, discarded = 0):
             j = min(n, i + B)
 
             if kernel == 'Gauss':
-                k = kernel_gaussian(x[index[i:j]], x[index[i:j]], 1.0)
+                k = kernel_gaussian(x[:,index[i:j]], x[:,index[i:j]], np.sqrt(d))
             elif kernel == 'Delta':
-                k = kernel_delta_norm(x[index[i:j]], x[index[i:j]])
+                k = kernel_delta_norm(x[:,index[i:j]], x[:, index[i:j]])
 
             k = np.dot(np.dot(H, k), H)
 
