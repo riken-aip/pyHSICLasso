@@ -73,7 +73,7 @@ def compute_kernel(x, kernel, B = 0, M = 1, discarded = 0):
 
             if kernel == 'Gaussian':
                 k = kernel_gaussian(x[:,index[i:j]], x[:,index[i:j]], np.sqrt(d))
-            elif kernel == 'Dirac':
+            elif kernel == 'Delta':
                 k = kernel_delta_norm(x[:,index[i:j]], x[:, index[i:j]])
 
             k = np.dot(np.dot(H, k), H)

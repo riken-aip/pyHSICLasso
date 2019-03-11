@@ -77,7 +77,7 @@ class HSICLasso(object):
 
     def classification(self, num_feat=5, B=20, M=3, discrete_x=False, max_neighbors=10, n_jobs=-1, covars = np.array([])):
         self._run_hsic_lasso(num_feat=num_feat,
-                             y_kernel="Dirac",
+                             y_kernel="Delta",
                              B=B, M=M,
                              discrete_x=discrete_x,
                              max_neighbors=max_neighbors,
@@ -93,7 +93,7 @@ class HSICLasso(object):
         self.max_neighbors = max_neighbors
         n = self.X_in.shape[1]
         B = B if B else n
-        x_kernel = "Dirac" if discrete_x else "Gaussian"
+        x_kernel = "Delta" if discrete_x else "Gaussian"
         numblocks = n / B
         discarded = n % B
 
