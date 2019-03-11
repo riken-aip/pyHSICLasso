@@ -30,10 +30,6 @@ def hsic_lasso(X, Y, y_kernel, x_kernel='Gaussian', n_jobs=-1, discarded=0, B=0,
     d, n = X.shape
     dy = Y.shape[0]
 
-    #This is not right
-    #L = np.zeros((n * B * M, dy))
-    #for i in range(dy):
-    #    L[:,i] = compute_kernel(Y[i,:], y_kernel, B, M, discarded)
     L = compute_kernel(Y, y_kernel, B, M, discarded)
     L = np.reshape(L,(n * B * M,1))
 
