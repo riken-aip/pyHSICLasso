@@ -128,6 +128,13 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
             betas = np.dot(Ky.transpose(),Kc) / np.trace(np.dot(Kc.T, Kc))
             self.Xty = self.Xty - betas*np.dot(self.X.transpose(),Kc)
 
+        if covars.size:
+            C,Cty = hsic_lasso(covars, self.Y_in, y_kernel, "Gauss",
+                               n_jobs=n_jobs, discarded=discarded, B=B, perms=perms)
+
+            betas = Cty / np.trace(np.dot(C.T,C))
+            self.Xty = self.Xty - np.dot(betas, C)
+
         self.path, self.beta, self.A, self.lam, self.A_neighbors, \
             self.A_neighbors_score = nlars(
                 self.X, self.Xty, num_feat, self.max_neighbors)
@@ -352,7 +359,7 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
                 raise TypeError("Check arg type")
         elif len(args) == 3:
             if isinstance(args[0], np.ndarray) and isinstance(args[1], np.ndarray) and isinstance(args[2], list):
-                        pass
+                pass
             else:
                 raise TypeError("Check arg type")
 
