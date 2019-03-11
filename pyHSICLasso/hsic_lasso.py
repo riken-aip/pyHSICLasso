@@ -83,9 +83,8 @@ def hsic_lasso(X, Y, y_kernel, x_kernel='Gauss', n_jobs=-1, discarded=0, B=0, M=
     result = dict(result)
 
     K = np.array([result[k] for k in range(d)]).T
-    KtL = np.dot(K.T, L)
 
-    return K, KtL
+    return L,K
 
 def compute_kernel(x, kernel, B = 0, M = 1, discarded = 0):
 
