@@ -37,7 +37,7 @@ This class has the following methods.
 - classification
 - dump
 - plot_path
-- plot_dendrogram
+- plot_dendrogram 
 - plot_heatmap
 - get_features
 - get_features_neighbors
@@ -77,10 +77,21 @@ If you want to save the feature selection results in csv file, please call the f
 >>> hsic_lasso.save_param()
 ```
 
+## To get rid of specific covariates effect
+In biology applications, we may want to get rid of the effect of some covariates such as gender and/or age. 
+In such cases, we can pre-specify the covariates `X` in `classification` or `regression` functions as
 
+```py
+>>> hsic_lasso.regression(5,covars=X)
+
+>>> hsic_lasso.classification(10,covars=X)
+```
+
+Please check the `example/sample_covars.py` for details. 
 
 ## To handle large number of samples 
-HSIC Lasso scales well with respect to the number of features `d`. However, the vanilla HSIC Lasso requires `O(dn^2)` memory space and may run out the memory if the number of samples `n` is more than 1000. In such case, we can use the block HSIC Lasso which requires only `O(dnBM)` space, where `B << n` is the block parameter and `M` is the permutation parameter to stabilize the final result. This can be done by specifying `B` and `M` parameters in the regression or classification function. Our recommendation would be `B=20` and `M=3`. 
+HSIC Lasso scales well with respect to the number of features `d`. However, the vanilla HSIC Lasso requires `O(dn^2)` memory space and may run out the memory if the number of samples `n` is more than 1000. In such case, we can use the block HSIC Lasso which requires only `O(dnBM)` space, where `B << n` is the block parameter and `M` is the permutation parameter to stabilize the final result. This can be done by specifying `B` and `M` parameters in the regression or classification function. 
+Currently, the default parameters are `B=20` and `M=3`, respectively.  If you wish to use the vanilla HSIC Lasso, please use `B=0` and `M=1`.
 
 ## Example
 
