@@ -27,7 +27,7 @@ def main():
     covars_index = np.array([99,299])
 
     hsic_lasso.input(X,Y,featname=featname)
-    hsic_lasso.regression(5,covars=X[:,covars_index])
+    hsic_lasso.regression(5,covars=X[:,covars_index],covars_kernel="Gaussian")
     hsic_lasso.dump()
     hsic_lasso.plot_path()
 

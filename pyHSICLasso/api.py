@@ -64,29 +64,31 @@ class HSICLasso(object):
         self._check_shape()
         return True
 
-    def regression(self, num_feat=5, B=20, M=3, discrete_x=False, max_neighbors=10, n_jobs=-1, covars = np.array([])):
+    def regression(self, num_feat=5, B=20, M=3, discrete_x=False, max_neighbors=10, n_jobs=-1, covars = np.array([]),covars_kernel="Gaussian"):
         self._run_hsic_lasso(num_feat=num_feat,
                              y_kernel="Gaussian",
                              B=B, M=M,
                              discrete_x=discrete_x,
                              max_neighbors=max_neighbors,
                              n_jobs=n_jobs,
-                             covars=covars)
+                             covars=covars,
+                             covars_kernel=covars_kernel)
 
         return True
 
-    def classification(self, num_feat=5, B=20, M=3, discrete_x=False, max_neighbors=10, n_jobs=-1, covars = np.array([])):
+    def classification(self, num_feat=5, B=20, M=3, discrete_x=False, max_neighbors=10, n_jobs=-1, covars = np.array([]),covars_kernel="Gaussian"):
         self._run_hsic_lasso(num_feat=num_feat,
                              y_kernel="Delta",
                              B=B, M=M,
                              discrete_x=discrete_x,
                              max_neighbors=max_neighbors,
                              n_jobs=n_jobs, 
-                             covars=covars)
+                             covars=covars,
+                             covars_kernel=covars_kernel)
 
         return True
 
-    def _run_hsic_lasso(self, y_kernel, num_feat, B, M, discrete_x, max_neighbors, n_jobs, covars):
+    def _run_hsic_lasso(self, y_kernel, num_feat, B, M, discrete_x, max_neighbors, n_jobs, covars, covars_kernel):
 
         if self.X_in is None or self.Y_in is None:
             raise UnboundLocalError("Input your data")
@@ -119,13 +121,20 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
         self.Xty = Xty * 1 / (numblocks * M)
 
         if covars.size:
-            Kc = compute_kernel(covars.transpose(), 'Gaussian', B, M, discarded)
+            if self.X_in.shape[1] != covars.shape[0]:
+                raise UnboundLocalError("The number of rows in the covars matrix should be " + str(self.X_in.shape[1]))
+
+            if covars_kernel == "Gaussian":
+                Kc = compute_kernel(covars.transpose(), 'Gaussian', B, M, discarded)
+            else:
+                Kc = compute_kernel(covars.transpose(), 'Delta', B, M, discarded)
             Kc = np.reshape(Kc,(n * B * M,1))
 
             Ky = Ky * np.sqrt(1 / (numblocks * M))
             Kc = Kc * np.sqrt(1 / (numblocks * M))
 
             betas = np.dot(Ky.transpose(),Kc) / np.trace(np.dot(Kc.T, Kc))
+            #print(betas)
             self.Xty = self.Xty - betas*np.dot(self.X.transpose(),Kc)
 
         self.path, self.beta, self.A, self.lam, self.A_neighbors, \
