@@ -156,7 +156,7 @@ array([0.9789888 , 0.10350618, 0.09757666, 0.09751763, 0.09678892])
 - Climente-González, H., Azencott, C-A., Kaski, S., & Yamada, M., [Block HSIC Lasso: model-free biomarker detection for ultra-high dimensional data.](https://www.biorxiv.org/content/10.1101/532192v1) ISMB/ECCB 2019.
 -  Yamada, M., Tang, J., Lugo-Martinez, J., Hodzic, E., Shrestha, R., Saha, A., Ouyang, H., Yin, D., Mamitsuka, H., Sahinalp, C., Radivojac, P., Menczer, F., & Chang, Y. [Ultra High-Dimensional Nonlinear Feature Selection for Big Biological Data.
 ](https://ieeexplore.ieee.org/document/8248802/) IEEE Transactions on Knowledge and Data Engineering (TKDE), pp.1352-1365, 2018.
-- Yamada, M., Jitkrittum, W., Sigal, L., Xing, E. P. & Sugiyama, M. [High-Dimensional Feature Selection by Feature-Wise Kernelized Lasso.](http://www.ms.k.u-tokyo.ac.jp/2014/HSICLasso.pdf) Neural Computation, vol.26, no.1, pp.185-207, 2014. (**Google scholar citations: 97** as of 2019/4/10)
+- Yamada, M., Jitkrittum, W., Sigal, L., Xing, E. P. & Sugiyama, M. [High-Dimensional Feature Selection by Feature-Wise Kernelized Lasso.](http://www.ms.k.u-tokyo.ac.jp/2014/HSICLasso.pdf) Neural Computation, vol.26, no.1, pp.185-207, 2014. (**Google scholar citations: 100** as of 2019/5/4)
 
 ## Contributors
 ### Developers
