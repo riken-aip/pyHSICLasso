@@ -152,6 +152,32 @@ array([0.9789888 , 0.10350618, 0.09757666, 0.09751763, 0.09678892])
 
 ```
 
+## Citation
+If you use this softwawre for your research, please cite the following two papers: Original HSIC Lasso and its block counterparts.
+```
+@article{yamada2014high,
+  title={High-dimensional feature selection by feature-wise kernelized lasso},
+  author={Yamada, Makoto and Jitkrittum, Wittawat and Sigal, Leonid and Xing, Eric P and Sugiyama, Masashi},
+  journal={Neural computation},
+  volume={26},
+  number={1},
+  pages={185--207},
+  year={2014},
+  publisher={MIT Press}
+}
+
+@article{climente2019block,
+  title={Block HSIC Lasso: model-free biomarker detection for ultra-high dimensional data},
+  author={Climente-Gonz{\'a}lez, H{\'e}ctor and Azencott, Chlo{\'e}-Agathe and Kaski, Samuel and Yamada, Makoto},
+  journal={Bioinformatics},
+  volume={35},
+  number={14},
+  pages={i427--i435},
+  year={2019},
+  publisher={Oxford University Press}
+}
+```
+
 ## References
 
 ### Algorithms
