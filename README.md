@@ -181,20 +181,20 @@ If you use this softwawre for your research, please cite the following two paper
 ## References
 
 ### Algorithms
-- Climente-González, H., Azencott, C-A., Kaski, S., & Yamada, M., [Block HSIC Lasso: model-free biomarker detection for ultra-high dimensional data.](https://doi.org/10.1093/bioinformatics/btz333) Bioinformatics, Volume 35, Issue 14, July 2019, Pages i427–i435 (Also presented at ISMB 2019). (**Google scholar citations: 4** as of 2020/8/24)
+- Climente-González, H., Azencott, C-A., Kaski, S., & Yamada, M., [Block HSIC Lasso: model-free biomarker detection for ultra-high dimensional data.](https://doi.org/10.1093/bioinformatics/btz333) Bioinformatics, Volume 35, Issue 14, July 2019, Pages i427–i435 (Also presented at ISMB 2019). (**Google scholar citations: 8** as of 2021/2/15)
 -  Yamada, M., Tang, J., Lugo-Martinez, J., Hodzic, E., Shrestha, R., Saha, A., Ouyang, H., Yin, D., Mamitsuka, H., Sahinalp, C., Radivojac, P., Menczer, F., & Chang, Y. [Ultra High-Dimensional Nonlinear Feature Selection for Big Biological Data.
-](https://ieeexplore.ieee.org/document/8248802/) IEEE Transactions on Knowledge and Data Engineering (TKDE), pp.1352-1365, 2018. (**Google scholar citations: 25** as of 2020/8/24)
-- Yamada, M., Jitkrittum, W., Sigal, L., Xing, E. P. & Sugiyama, M. [High-Dimensional Feature Selection by Feature-Wise Kernelized Lasso.](http://www.ms.k.u-tokyo.ac.jp/2014/HSICLasso.pdf) Neural Computation, vol.26, no.1, pp.185-207, 2014. (**Google scholar citations: 157** as of 2020/8/24)
+](https://ieeexplore.ieee.org/document/8248802/) IEEE Transactions on Knowledge and Data Engineering (TKDE), pp.1352-1365, 2018. (**Google scholar citations: 31** as of 2021/2/15)
+- Yamada, M., Jitkrittum, W., Sigal, L., Xing, E. P. & Sugiyama, M. [High-Dimensional Feature Selection by Feature-Wise Kernelized Lasso.](http://www.ms.k.u-tokyo.ac.jp/2014/HSICLasso.pdf) Neural Computation, vol.26, no.1, pp.185-207, 2014. (**Google scholar citations: 175** as of 2021/2/15)
 
 ### Theory
 - Poignard, B., Yamada, M. Sparse Hilbert-Schmidt Independence Regression. AISTATS 2020. 
 
 ### Real applications
-- Takahashi, Y., Ueki, M., Yamada, M., Tamiya, G., Motoike, I., Saigusa, D., Sakurai, M., Nagami, F., Ogishima, S., Koshiba, S., Kinoshita, K., Yamamoto, M., Tomita, H. Improved metabolomic data-based prediction of depressive symptoms using nonlinear machine learning with feature selection. Translational Psychiatry volume 10, Article number: 157 (2020). 
+- Takahashi, Y., Ueki, M., Yamada, M., Tamiya, G., Motoike, I., Saigusa, D., Sakurai, M., Nagami, F., Ogishima, S., Koshiba, S., Kinoshita, K., Yamamoto, M., Tomita, H. Improved metabolomic data-based prediction of depressive symptoms using nonlinear machine learning with feature selection. Translational Psychiatry volume 10, Article number: 157 (2020). (**Google scholar citations: 7** as of 2021/2/15)
 
 ## Contributors
 ### Developers
-Name : Makoto Yamada (Kyoto University/RIKEN AIP), Héctor Climente-González (Institut Curie)
+Name : Makoto Yamada (Kyoto University/RIKEN AIP), Héctor Climente-González (RIKEN AIP)
 
 E-mail : makoto.yamada@riken.jp
 
