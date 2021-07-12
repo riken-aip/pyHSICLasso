@@ -15,6 +15,7 @@ from .kernel_tools import kernel_delta_norm, kernel_gaussian
 
 standard_library.install_aliases()
 
+
 def hsic_lasso(X, Y, y_kernel, x_kernel='Gaussian', n_jobs=-1, discarded=0, B=0, M=1):
     """
     Input:
@@ -50,6 +51,7 @@ def hsic_lasso(X, Y, y_kernel, x_kernel='Gaussian', n_jobs=-1, discarded=0, B=0,
 
     return K, KtL, L
 
+
 def compute_kernel(x, kernel, B = 0, M = 1, discarded = 0):
 
     d,n = x.shape
@@ -61,8 +63,9 @@ def compute_kernel(x, kernel, B = 0, M = 1, discarded = 0):
     if kernel == "Gaussian":
         x = (x / (x.std() + 10e-20)).astype(np.float32)
 
+    num_elements = int((B * (B + 1)) / 2)
     st = 0
-    ed = B ** 2
+    ed = num_elements
     index = np.arange(n)
     for m in range(M):
         np.random.seed(m)
@@ -75,16 +78,19 @@ def compute_kernel(x, kernel, B = 0, M = 1, discarded = 0):
                 k = kernel_gaussian(x[:,index[i:j]], x[:,index[i:j]], np.sqrt(d))
             elif kernel == 'Delta':
                 k = kernel_delta_norm(x[:,index[i:j]], x[:, index[i:j]])
+            else:
+                raise ValueError("invalid kernel selected")
 
             k = np.dot(np.dot(H, k), H)
 
             # Normalize HSIC tr(k*k) = 1
             k = k / (np.linalg.norm(k, 'fro') + 10e-10)
-            K[st:ed] = k.flatten()
-            st += B ** 2
-            ed += B ** 2
+            K[st:ed] = k[np.tril_indices(k.shape[0])]
+            st += num_elements
+            ed += num_elements
 
     return K
+
 
 def parallel_compute_kernel(x, kernel, feature_idx, B, M, n, discarded):
 
