@@ -168,22 +168,20 @@ of blocks {} will be approximated to {}.".format(B, n, numblocks, int(numblocks)
 
     def dump(self):
         maxval = self.beta[self.A[0]][0]
-        print("============================================== HSICLasso : Result ==================================================")
-        print("| Order | Feature      | Score | Top-5 Related Feature (Relatedness Score)                                          |")
+        results = []
+        results.append(" HSICLasso : Result ")
+        results.append("| Order | Feature      | Score | Top-{} Related Feature (Relatedness Score)".format(min(5, len(self.beta) - 1)))
         for i in range(len(self.A)):
-            print("| {:<5} | {:<12} | {:.3f} | {:<12} ({:.3f}), {:<12} ({:.3f}),"
-                  " {:<12} ({:.3f}), {:<12} ({:.3f}), {:<12} ({:.3f})|".format(i + 1, self.featname[self.A[i]],
-                                                                               self.beta[self.A[i]
-                                                                                         ][0] / maxval,
-                                                                               self.featname[self.A_neighbors[i][1]
-                                                                                             ], self.A_neighbors_score[i][1],
-                                                                               self.featname[self.A_neighbors[i][2]
-                                                                                             ], self.A_neighbors_score[i][2],
-                                                                               self.featname[self.A_neighbors[i][3]
-                                                                                             ], self.A_neighbors_score[i][3],
-                                                                               self.featname[self.A_neighbors[i][4]
-                                                                                             ], self.A_neighbors_score[i][4],
-                                                                               self.featname[self.A_neighbors[i][5]], self.A_neighbors_score[i][5]))
+            ofs = "| {:<5} | {:<12} | {:.3f} |".format(i + 1, self.featname[self.A[i]], self.beta[self.A[i]][0] / maxval)
+            rf = [" {:<12} ({:.3f})".format(self.featname[nn], ns) for nn, ns, _ in zip(self.A_neighbors[i][1:], self.A_neighbors_score[i][1:], range(5))]
+            row = ofs + ",".join(rf)
+            results.append(row + " " * max(0, len(results[1]) - len(row)) + "|")
+
+        results[1] = results[1] + " " * max(0, len(row) - len(results[1])) + "|"
+        deco = "=" * ((len(results[1]) - len(results[0])) // 2)
+        results[0] = deco + results[0] + deco
+
+        print("\n".join(results))
 
         #print("===== HSICLasso : Path ======")
         # for i in range(len(self.A)):
