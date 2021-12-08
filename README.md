@@ -181,20 +181,20 @@ If you use this softwawre for your research, please cite the following two paper
 ## References
 
 ### Algorithms
-- Climente-González, H., Azencott, C-A., Kaski, S., & Yamada, M., [Block HSIC Lasso: model-free biomarker detection for ultra-high dimensional data.](https://doi.org/10.1093/bioinformatics/btz333) Bioinformatics, Volume 35, Issue 14, July 2019, Pages i427–i435 (Also presented at ISMB 2019). (**Google scholar citations: 14** as of 2021/6/25)
+- Climente-González, H., Azencott, C-A., Kaski, S., & Yamada, M., [Block HSIC Lasso: model-free biomarker detection for ultra-high dimensional data.](https://doi.org/10.1093/bioinformatics/btz333) Bioinformatics, Volume 35, Issue 14, July 2019, Pages i427–i435 (Also presented at ISMB 2019). (**Google scholar citations: 20** as of 2021/12/8)
 -  Yamada, M., Tang, J., Lugo-Martinez, J., Hodzic, E., Shrestha, R., Saha, A., Ouyang, H., Yin, D., Mamitsuka, H., Sahinalp, C., Radivojac, P., Menczer, F., & Chang, Y. [Ultra High-Dimensional Nonlinear Feature Selection for Big Biological Data.
-](https://ieeexplore.ieee.org/document/8248802/) IEEE Transactions on Knowledge and Data Engineering (TKDE), pp.1352-1365, 2018. (**Google scholar citations: 39** as of 2021/6/25)
-- Yamada, M., Jitkrittum, W., Sigal, L., Xing, E. P. & Sugiyama, M. [High-Dimensional Feature Selection by Feature-Wise Kernelized Lasso.](http://www.ms.k.u-tokyo.ac.jp/2014/HSICLasso.pdf) Neural Computation, vol.26, no.1, pp.185-207, 2014. (**Google scholar citations: 190** as of 2021/6/23)
+](https://ieeexplore.ieee.org/document/8248802/) IEEE Transactions on Knowledge and Data Engineering (TKDE), pp.1352-1365, 2018. (**Google scholar citations: 49** as of 2021/12/8)
+- Yamada, M., Jitkrittum, W., Sigal, L., Xing, E. P. & Sugiyama, M. [High-Dimensional Feature Selection by Feature-Wise Kernelized Lasso.](http://www.ms.k.u-tokyo.ac.jp/2014/HSICLasso.pdf) Neural Computation, vol.26, no.1, pp.185-207, 2014. (**Google scholar citations: 211** as of 2021/12/8)
 
 ### Theory
 - Poignard, B., Yamada, M. [Sparse Hilbert-Schmidt Independence Regression.](http://proceedings.mlr.press/v108/poignard20a/poignard20a.pdf) AISTATS 2020. 
 
 ### HSIC Lasso based algorithms
 - Freidling, T., Poignard, B., Climente-González, H., Yamada, M., [Post-selection inference with HSIC-Lasso.](https://arxiv.org/pdf/2010.15659.pdf) ICML 2021. [\[code\]](https://github.com/tobias-freidling/hsic-lasso-psi)
-- Huang, Q., Yamada, M., Tian, Y., Singh, D., Chang, Y., [GraphLIME: Local Interpretable Model Explanations for Graph Neural Networks](https://arxiv.org/pdf/2001.06216.pdf). arXiv 2020. [\[code\]](https://github.com/WilliamCCHuang/GraphLIME) (**Google scholar citations: 38** as of 2021/6/25)
+- Huang, Q., Yamada, M., Tian, Y., Singh, D., Chang, Y., [GraphLIME: Local Interpretable Model Explanations for Graph Neural Networks](https://arxiv.org/pdf/2001.06216.pdf). arXiv 2020. [\[code\]](https://github.com/WilliamCCHuang/GraphLIME) (**Google scholar citations: 63** as of 2021/12/8)
 
 ### Applications of HSIC Lasso
-- Takahashi, Y., Ueki, M., Yamada, M., Tamiya, G., Motoike, I., Saigusa, D., Sakurai, M., Nagami, F., Ogishima, S., Koshiba, S., Kinoshita, K., Yamamoto, M., Tomita, H. Improved metabolomic data-based prediction of depressive symptoms using nonlinear machine learning with feature selection. Translational Psychiatry volume 10, Article number: 157 (2020). (**Google scholar citations: 8** as of 2021/6/25)
+- Takahashi, Y., Ueki, M., Yamada, M., Tamiya, G., Motoike, I., Saigusa, D., Sakurai, M., Nagami, F., Ogishima, S., Koshiba, S., Kinoshita, K., Yamamoto, M., Tomita, H. Improved metabolomic data-based prediction of depressive symptoms using nonlinear machine learning with feature selection. Translational Psychiatry volume 10, Article number: 157 (2020). 
 
 ## Contributors
 ### Developers
