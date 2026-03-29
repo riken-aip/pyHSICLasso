@@ -15,7 +15,6 @@ from .kernel_tools import kernel_delta_norm, kernel_gaussian
 
 standard_library.install_aliases()
 
-
 def hsic_lasso(X, Y, y_kernel, x_kernel='Gaussian', n_jobs=-1, discarded=0, B=0, M=1):
     """
     Input:
@@ -50,7 +49,6 @@ def hsic_lasso(X, Y, y_kernel, x_kernel='Gaussian', n_jobs=-1, discarded=0, B=0,
     KtL = np.dot(K.T, L)
 
     return K, KtL, L
-
 
 def compute_kernel(x, kernel, B = 0, M = 1, discarded = 0):
 
@@ -96,7 +94,6 @@ def compute_kernel(x, kernel, B = 0, M = 1, discarded = 0):
             ed += num_elements
 
     return K
-
 
 def parallel_compute_kernel(x, kernel, feature_idx, B, M, n, discarded):
 
