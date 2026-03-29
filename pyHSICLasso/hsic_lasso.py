@@ -85,7 +85,13 @@ def compute_kernel(x, kernel, B = 0, M = 1, discarded = 0):
 
             # Normalize HSIC tr(k*k) = 1
             k = k / (np.linalg.norm(k, 'fro') + 10e-10)
-            K[st:ed] = k[np.tril_indices(k.shape[0])]
+            rows, cols = np.tril_indices(k.shape[0])
+            vals = k[rows, cols]
+            # Off-diagonal elements appear once here but twice in the full
+            # symmetric matrix, so weight them by sqrt(2) to preserve inner
+            # products: <K_tri_weighted, L_tri_weighted> == <K_full, L_full>
+            vals[rows != cols] *= np.sqrt(2)
+            K[st:ed] = vals
             st += num_elements
             ed += num_elements
 
