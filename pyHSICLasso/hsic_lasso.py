@@ -61,8 +61,9 @@ def compute_kernel(x, kernel, B = 0, M = 1, discarded = 0):
     if kernel == "Gaussian":
         x = (x / (x.std() + 10e-20)).astype(np.float32)
 
+    num_elements = int((B * (B + 1)) / 2)
     st = 0
-    ed = B ** 2
+    ed = num_elements
     index = np.arange(n)
     for m in range(M):
         np.random.seed(m)
@@ -75,14 +76,22 @@ def compute_kernel(x, kernel, B = 0, M = 1, discarded = 0):
                 k = kernel_gaussian(x[:,index[i:j]], x[:,index[i:j]], np.sqrt(d))
             elif kernel == 'Delta':
                 k = kernel_delta_norm(x[:,index[i:j]], x[:, index[i:j]])
+            else:
+                raise ValueError("invalid kernel selected")
 
             k = np.dot(np.dot(H, k), H)
 
             # Normalize HSIC tr(k*k) = 1
             k = k / (np.linalg.norm(k, 'fro') + 10e-10)
-            K[st:ed] = k.flatten()
-            st += B ** 2
-            ed += B ** 2
+            rows, cols = np.tril_indices(k.shape[0])
+            vals = k[rows, cols]
+            # Off-diagonal elements appear once here but twice in the full
+            # symmetric matrix, so weight them by sqrt(2) to preserve inner
+            # products: <K_tri_weighted, L_tri_weighted> == <K_full, L_full>
+            vals[rows != cols] *= np.sqrt(2)
+            K[st:ed] = vals
+            st += num_elements
+            ed += num_elements
 
     return K
 
